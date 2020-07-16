@@ -1,0 +1,24 @@
+version: '3'
+services:
+  gitlytics:
+    build: .
+    command: >
+      gunicorn -b :5000 --reload "app:api"
+    volumes:
+      - '.:/usr/src/app'
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: 'postgres:9.5'
+    env_file:
+      - '.env'
+    volumes:
+        - 'postgres_pl:/var/lib/postgresql/data'
+    ports:
+        - '5432:5432'
+
+volumes:
+  postgres_pl:
