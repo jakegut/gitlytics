@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { render } from '@testing-library/react'
 import ProjectListItem from './ProjectListItem'
 import VertEdit from './VertEdit';
 

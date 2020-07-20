@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Container, Grid, Typography, TextField, FormControl, RadioGroup, FormControlLabel, Radio, FormLabel, Button } from '@material-ui/core';
 import GroupDnd from './GroupDnd';
 import { getStudents } from '../../api/courseService';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { useForm } from '../Hooks';
 import { DateTimePicker } from '@material-ui/pickers';
 import { createProject } from '../../api/projectService'
@@ -10,6 +10,8 @@ import { createProject } from '../../api/projectService'
 export default function CreateProject(){
     const [groups, setGroups] = useState(null)
     const [form, handleChange, handleDate] = useForm({type: "individual", start_date: new Date(), due_date: new Date()})
+
+    const history = useHistory()
 
     const {course_id} = useParams()
 
@@ -32,10 +34,7 @@ export default function CreateProject(){
         }
         createProject(cpy)
         .then(data => {
-            return data
-        })
-        .catch(error => {
-            console.log(error.response.data)
+            history.push(`/courses/${course_id}`)
         })
     }
 

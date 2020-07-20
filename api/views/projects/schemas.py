@@ -9,7 +9,7 @@ class GroupSchema(Schema):
 
 class ProjectCreateSchema(Schema):
     name = fields.Str(required=True)
-    description = fields.Str(default='')
+    description = fields.Str(missing=None)
     course_id = fields.Int(required=True)
     start_date = fields.AwareDateTime(required=True)
     due_date = fields.AwareDateTime(required=True)

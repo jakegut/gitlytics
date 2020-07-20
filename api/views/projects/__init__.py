@@ -36,9 +36,7 @@ def create_project():
     if 'group' in data['type']:
         for group in data['groups']:
             g = Group(project_id=project.id)
-            print(group)
             for user in group:
-                print(user)
                 u = User.query.get(user['id'])
                 g.users.append(u)
             db.session.add(g)
