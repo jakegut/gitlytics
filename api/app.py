@@ -24,7 +24,7 @@ def create_app():
     migrate.init_app(app, db)
     jwt.init_app(app)
 
-    from models import Course, OAuth, User, Invite
+    from models import Course, User, Invite
 
     @jwt.user_identity_loader
     def user_identity_lookup(user):
@@ -59,6 +59,9 @@ def create_app():
 
     from views.invites import invites
     app.register_blueprint(invites, url_prefix="/invites")
+
+    from views.projects import projects
+    app.register_blueprint(projects, url_prefix="/projects")
 
     return app
 

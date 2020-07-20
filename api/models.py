@@ -29,18 +29,6 @@ class User(UserMixin, db.Model):
 
     courses = db.relationship('Course', secondary=registered, backref=db.backref('users'))
 
-    def to_json(self):
-        return {
-            "id": self.id,
-            "username": self.username,
-            "email": self.email,
-            "name": self.name
-        }
-
-class OAuth(OAuthConsumerMixin, db.Model):
-    user_id = db.Column(db.Integer, db.ForeignKey(User.id))
-    user = db.relationship(User)
-
 class Course(db.Model):
     __tablename__ = "courses"
 
@@ -79,19 +67,30 @@ class ProjectTypes(enum.Enum):
     GROUP_IND = "group_ind"
     GROUP_GROUP = "group_group"
 
+    def __str__(self):
+        return self.value
+
 class Project(db.Model):
     __tablename__ = "projects"
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text)
-    date_created = db.Column(db.DateTime(timezone=True), default=func.now())
+    date_created = db.Column(db.DateTime(timezone=True), server_default=func.now())
+    start_date = db.Column(db.DateTime(timezone=True), nullable=False)
     due_date = db.Column(db.DateTime(timezone=True), nullable=False)
     type = db.Column(db.Enum(ProjectTypes, values_callable=lambda obj: [e.value for e in obj]))
 
-
     course_id = db.Column(db.Integer, db.ForeignKey("courses.id"))
     course = db.relationship(Course, backref=db.backref("projects"))
+
+    def get_repo_for_user(self, user_id):
+        if self.type == ProjectTypes.IND or self.type == ProjectTypes.GROUP_IND:
+            return self.repos.filter_by(user_id=user_id).first()
+        else:
+            q = User.get(user_id).groups
+            g = self.groups.intersect(q).first()
+            return g.repo
 
 class Group(db.Model):
     __tablename__ = "groups"
@@ -99,7 +98,7 @@ class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     project_id = db.Column(db.Integer, db.ForeignKey("projects.id"), nullable=False)
-    project = db.relationship(Project, backref=db.backref("groups"))
+    project = db.relationship(Project, backref=db.backref("groups", lazy='dynamic', cascade="all, delete"))
 
     users = db.relationship(User, secondary=assignments, backref=db.backref("groups"))
 
@@ -110,10 +109,10 @@ class Repo(db.Model):
     url = db.Column(db.Text, unique=True)
 
     project_id = db.Column(db.Integer, db.ForeignKey("projects.id"))
-    project = db.relationship(Project, backref=db.backref("repos"))
+    project = db.relationship(Project, backref=db.backref("repos", lazy='dynamic'), cascade="all, delete")
 
     group_id = db.Column(db.Integer, db.ForeignKey("groups.id"))
-    group = db.relationship(Group, backref=db.backref("repos"))
+    group = db.relationship(Group, backref=db.backref("repo"))
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-    user = db.relationship(User)
+    user = db.relationship(User, backref=db.backref("repos"))

@@ -5,10 +5,11 @@ import { getStudents } from '../../api/courseService';
 import { useParams } from 'react-router-dom';
 import { useForm } from '../Hooks';
 import { DateTimePicker } from '@material-ui/pickers';
+import { createProject } from '../../api/projectService'
 
 export default function CreateProject(){
     const [groups, setGroups] = useState(null)
-    const [form, handleChange, handleDate] = useForm()
+    const [form, handleChange, handleDate] = useForm({type: "individual", start_date: new Date(), due_date: new Date()})
 
     const {course_id} = useParams()
 
@@ -18,6 +19,31 @@ export default function CreateProject(){
             setGroups([data.students])
         })
     }, [])
+
+    function handleSubmit(e){
+        e.preventDefault()
+        let cpy = {...form}
+        cpy.course_id = course_id
+        cpy.start_date = form.start_date.toISOString(true)
+        cpy.due_date = form.due_date.toISOString(true)
+        if(cpy.type.includes("group") && checkGroupMin()){
+            let groupData = groups.slice(1)
+            cpy = {...cpy, groups: groupData}
+        }
+        createProject(cpy)
+        .then(data => {
+            return data
+        })
+        .catch(error => {
+            console.log(error.response.data)
+        })
+    }
+
+    function checkGroupMin(){
+        if(form.type.includes("group"))
+            return groups.slice(1).length > 0 && groups[1].length > 0
+        return true
+    }
 
     return (
     <Container maxWidth="md" fixed>
@@ -68,6 +94,8 @@ export default function CreateProject(){
                     <DateTimePicker 
                         label="Due Date"
                         disablePast
+                        minDate={form.start_date}
+                        minDateMessage="Date should be after start date"
                         value={form.due_date || new Date()}
                         onChange={(date) => handleDate("due_date", date)}
                         name="due_date"
@@ -76,7 +104,7 @@ export default function CreateProject(){
                     />
                 </Grid>
             </Grid>
-            <FormControl component="fieldset" style={{margin: "8px"}}>
+            <FormControl error={!checkGroupMin()} component="fieldset" style={{margin: "8px"}}>
                 <FormLabel component="legend">Type</FormLabel>
                 <RadioGroup aria-label="gender" name="type" value={form.type || "individual"} onChange={handleChange}>
                     <FormControlLabel value="individual" control={<Radio />} label="Individual" />
@@ -89,7 +117,7 @@ export default function CreateProject(){
             <GroupDnd items={groups} setItems={setGroups}/>
             )}
             <br />
-            <Button type="submit">
+            <Button type="submit" onClick={handleSubmit} disabled={!checkGroupMin()}>
                 Submit
             </Button>
 

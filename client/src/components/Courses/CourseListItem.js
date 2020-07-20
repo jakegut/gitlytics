@@ -1,7 +1,6 @@
 import React from 'react'
 import { Typography, Button, CardContent, CardActions, Card } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid'
-import Container from '@material-ui/core/Container'
 import LinkButton from '../LinkButton'
 
 export default function CourseListItem({course}){

@@ -7,7 +7,6 @@ from app import db
 from models import Course, Invite
 import views.courses.schemas as course_schemas
 import views.invites.schemas as views_schemas
-invites_no_class = views_schemas.InviteSchema(many=True, exclude=("course", ))
 
 invites = Blueprint('invites', __name__)
 
@@ -57,5 +56,5 @@ def create_invites():
     db.session.commit()
     return jsonify({
         "message": "success",
-        "invites": invites_no_class.dump(many_invs)
+        "invites": views_schemas.invite_schema.dump(many_invs)
     })

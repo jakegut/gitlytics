@@ -5,6 +5,7 @@ import { getCourse } from '../../api/courseService';
 import { useLoader } from '../../LoadContext';
 import AddIcon from '@material-ui/icons/Add'
 import InviteUserDialog from '../Invites/InviteUserDialog';
+import ProjectList from '../Projects/ProjectList';
 
 export default function ViewCourse(){
     const {course_id} = useParams();
@@ -37,6 +38,12 @@ export default function ViewCourse(){
         setData(cpy)
     }
 
+    function deleteProject(id){
+        let cpy = {...data}
+        cpy.course.projects = cpy.course.projects.filter(p => p.id !== id)
+        setData(cpy)
+    }
+
     return (
         <Container maxWidth="lg">
         {data.course !== undefined && (
@@ -60,6 +67,7 @@ export default function ViewCourse(){
                             </IconButton>
                         )}
                     </Typography>
+                    {data.course.projects && <ProjectList projects={data.course.projects} deleteProject={deleteProject}/>}
                 </Grid>
                 <Grid item xs={6}>
                     <Typography variant="h4">
