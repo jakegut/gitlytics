@@ -1,10 +1,11 @@
 from marshmallow import Schema, fields, validate
 
-import views.courses.schemas as course_schema
+import views.courses.schemas as cs
 
 class InviteSchema(Schema):
     id = fields.Int()
     username = fields.Str()
+    course = fields.Nested(cs.CourseSchema())
 
 class CreateInviteSchema(Schema):
     username = fields.Str(required=True)

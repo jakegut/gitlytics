@@ -1,11 +1,22 @@
 version: '3'
 services:
-  gitlytics:
-    build: .
+  client:
+    build: ./client
+    volumes:
+      - './client:/app'
+      - '/app/node_modules'
+    ports:
+      - 3000:3000
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    stdin_open: true
+
+  api:
+    build: ./api
     command: >
       gunicorn -b :5000 --reload "app:api"
     volumes:
-      - '.:/usr/src/app'
+      - './api:/usr/src/app'
     ports:
       - "5000:5000"
     depends_on:

@@ -89,4 +89,7 @@ def get_user():
     user = User.query.filter_by(username=get_jwt_identity()).first()
     if user is None:
         return jsonify({"error": "error"})
-    return jsonify({"user": {"username": user.username, "owned_courses": [c.id for c in user.owned_courses]}})
+    return jsonify({"user": {
+        "username": user.username,
+        "owned_courses": [c.id for c in user.owned_courses],
+        "avatar_url": user.avatar_url}})

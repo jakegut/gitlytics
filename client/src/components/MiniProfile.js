@@ -7,6 +7,8 @@ import {UserContext} from '../UserContext';
 
 const useStyles = makeStyles((theme) => ({
     profile: {
+        paddingTop: "8px",
+        paddingBottom: "8px",
         minHeight: "100px",
         backgroundColor: theme.palette.background.default,
         paddingLeft: "20px"
@@ -28,7 +30,7 @@ export default function MiniProfile() {
 
     return(
         <div className={classes.profile}>
-            <img src={pic} className={classes.pfp}/>
+            <img src={user == null ? pic : user.avatar_url} className={classes.pfp}/>
             <Typography className={classes.text}>
                 Hello, {user == null ? "guest" : user.username }!
             </Typography>

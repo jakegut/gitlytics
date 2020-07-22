@@ -4,7 +4,7 @@ from requests_oauthlib import OAuth2Session
 from marshmallow import ValidationError
 
 from app import db
-from models import Course, Invite, Project, Group, User
+from models import Course, Invite, Project, Group, User, ProjectTypes, Repo
 import views.projects.schemas as ps
 import settings
 
@@ -64,7 +64,27 @@ def delete_project(project_id):
 @projects.route("/<int:project_id>/repos", methods=['POST'])
 @jwt_required
 def add_repo(project_id):
+    data = request.json()
     project = Project.query.get(project_id)
+    if project is None:
+        return jsonify(message="Project not found"), 404
+    if not project.course.is_user(current_user.id):
+        return jsonify(message="Unauthorized to add project"), 403
+    repo = project.get_repo_for_user(current_user.id)
+    if repo:
+        return jsonify(message="Already added repo for project"), 400
+
+    repo = Repo(project_id=project.id, name=data['repo_name'])
+    repo.user_id = current_user.id
+    if project.type is not ProjectTypes.IND:
+        g = project.get_group_for_user(current_user.id)
+        if g is None:
+            return jsonify(message="Not part of group"), 400
+        repo.group_id = g.id
+
+    db.session.add(repo)
+    db.session.commit()
+    return jsonify(repo=ps.RepoSchema().dump(repo)), 201
 
 @projects.route("/search/repo")
 @jwt_required

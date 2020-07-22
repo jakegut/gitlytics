@@ -12,10 +12,10 @@ export default function Home() {
             alignItems="center"
             style={{minHeight: "calc(100vh - 200px)"}}
             >
-                <Grid item alignItems="center">
-                    <Logo width="400" height="auto" fill="#c83737"/>
+                <Grid item>
+                    <Logo width="400" height="auto" fill="#F44336"/>
                 </Grid>
-                <Grid item alignItems="center">
+                <Grid item>
                     <Typography variant="h2" style={{fontWeight: "600"}}>
                         gitlytics
                     </Typography>

@@ -109,7 +109,7 @@ class Repo(db.Model):
     __tablename__ = "repos"
 
     id = db.Column(db.Integer, primary_key=True)
-    url = db.Column(db.Text, unique=True)
+    name = db.Column(db.Text, unique=True)
 
     project_id = db.Column(db.Integer, db.ForeignKey("projects.id"))
     project = db.relationship(Project, backref=db.backref("repos", lazy='dynamic'), cascade="all, delete")

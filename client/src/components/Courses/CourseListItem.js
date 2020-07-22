@@ -16,7 +16,7 @@ export default function CourseListItem({course}){
                 </Typography>
             </CardContent>
             <CardActions>
-                <LinkButton color="primary" to={`/courses/${course.id}`}>
+                <LinkButton to={`/courses/${course.id}`}>
                 Go to course
                 </LinkButton>
             </CardActions>
