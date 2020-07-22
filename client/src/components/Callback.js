@@ -15,7 +15,7 @@ export default function Callback(){
         .then((data) => {
             setUser(data.user)
             setToken(data.access_token)
-            // history.push("/")
+            history.push("/")
         })
     }, [])
 

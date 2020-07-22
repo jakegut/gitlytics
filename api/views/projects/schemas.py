@@ -7,6 +7,13 @@ class GroupSchema(Schema):
     project_id = fields.Int()
     users = fields.List(fields.Nested(UserSchema))
 
+class RepoSchema(Schema):
+    id = fields.Int()
+    url = fields.Str()
+    project_id = fields.Int()
+    user_id = fields.Int()
+    group = fields.Nested(GroupSchema)
+
 class ProjectCreateSchema(Schema):
     name = fields.Str(required=True)
     description = fields.Str(missing=None)
@@ -25,6 +32,19 @@ class ProjectSchema(Schema):
     due_date = fields.DateTime()
     course_id = fields.Int()
     groups = fields.List(fields.Nested(GroupSchema))
+    user_repo = fields.Method("get_user_repo")
+    user_group = fields.Method("get_user_group")
+
+    def get_user_repo(self, obj):
+        if 'current_user' in self.context:
+            return RepoSchema().dump(obj.get_repo_for_user(self.context['current_user'].id))
+        return "No user context"
+
+    def get_user_group(self, obj):
+        if 'current_user' in self.context:
+            return  GroupSchema().dump(obj.get_group_for_user(self.context['current_user'].id))
+        return "No user context"
 
 project_create_schema = ProjectCreateSchema()
 project_schema = ProjectSchema()
+repo_schema = RepoSchema()

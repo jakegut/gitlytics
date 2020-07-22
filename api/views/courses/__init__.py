@@ -7,6 +7,7 @@ from marshmallow import ValidationError
 from app import db
 from . import schemas
 import views.invites.schemas as inv_schemas
+import views.projects.schemas as ps
 import views.users.schemas as u_schemas
 from models import Course, Invite, User
 import settings
@@ -18,8 +19,8 @@ def is_student_or_owner(course_id):
     if course is None:
         return jsonify(error="Course not found"), 404
     is_owner = (course.owner_id == current_user.id)
-    is_user = (u.username == current_user for u in course.users)
-    if is_owner is None and is_user is None:
+    is_user = course.is_user(current_user.id)
+    if is_owner is False and is_user is False:
         return jsonify(error="Unauthorized to view course"), 403
     return course
 
@@ -27,8 +28,8 @@ def is_student_or_owner(course_id):
 @jwt_required
 def index():
     return jsonify({
-        "owned_courses": schemas.CourseSchema(many=True, exclude=("users",)).dump(current_user.owned_courses),
-        "courses": schemas.courses_schema.dump(current_user.courses)
+        "owned_courses": schemas.CourseSchema(many=True, exclude=("users", "projects")).dump(current_user.owned_courses),
+        "courses": schemas.CourseSchema(many=True, exclude=("users", "projects")).dump(current_user.courses)
     })
 
 @courses.route("/", methods=['POST'])
@@ -60,8 +61,10 @@ def get_course(course_id):
     if not isinstance(course, Course):
         return course
     is_owner = course.owner_id == current_user.id
+    c_schema = schemas.CourseSchema(exclude=("projects.groups",))
+    c_schema.context['current_user'] = current_user
     ret = {
-        "course": schemas.course_schema.dump(course)
+        "course": c_schema.dump(course)
     }
     if is_owner:
         ret['invites'] = inv_schemas.invites_schema.dump(course.invites)

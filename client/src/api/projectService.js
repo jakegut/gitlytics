@@ -14,3 +14,10 @@ export function deleteProject(projectId){
         return response.data
     })
 }
+
+export function getRepos(){
+    return axios.get("/projects/search/repo", getAxiosConfig())
+    .then(response => {
+        return response.data
+    })
+}

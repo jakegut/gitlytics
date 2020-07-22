@@ -6,6 +6,7 @@ from marshmallow import ValidationError
 from app import db
 from models import Course, Invite, Project, Group, User
 import views.projects.schemas as ps
+import settings
 
 projects = Blueprint('projects', __name__)
 
@@ -29,7 +30,8 @@ def create_project():
                       description=data['description'],
                       start_date=data['start_date'],
                       due_date=data['due_date'],
-                      course_id=data['course_id'])
+                      course_id=data['course_id'],
+                      type=data['type'])
     db.session.add(project)
     db.session.commit()
 
@@ -58,3 +60,16 @@ def delete_project(project_id):
         return jsonify({}), 204
     else:
         return jsonify(message="Unauthorized"), 403
+
+@projects.route("/<int:project_id>/repos", methods=['POST'])
+@jwt_required
+def add_repo(project_id):
+    project = Project.query.get(project_id)
+
+@projects.route("/search/repo")
+@jwt_required
+def search_user_repos():
+    github = OAuth2Session(settings.GITHUB_OAUTH_CLIENT_ID, token={"access_token": current_user.oauth_token})
+    resp = github.get(f"{settings.GITHUB_API_BASE_URL}user/repos?sort=pushed").json()
+
+    return jsonify([{"full_name": u['full_name']} for u in resp])

@@ -10,6 +10,8 @@ import IconButton from '@material-ui/core/IconButton';
 import Hidden from '@material-ui/core/Hidden'
 import MenuIcon from '@material-ui/icons/Menu'
 
+import {ReactComponent as Logo} from '../gitlytics-logo.svg'
+
 import {Switch, Route} from 'react-router-dom';
 
 import Home from './Home';
@@ -91,6 +93,7 @@ export default function Main() {
           >
             <MenuIcon />
           </IconButton>
+          <Logo height="40" width="auto" style={{fill: "white", paddingRight: '8px'}}/>
           <Typography variant="h6" noWrap>
             gitlytics
           </Typography>

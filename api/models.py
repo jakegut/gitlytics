@@ -43,13 +43,11 @@ class Course(db.Model):
         super(Course, self).__init__(**kwargs)
         self.invite_id = random_string(8)
 
-    def to_json(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "invite_id": self.invite_id,
-            "owner": self.owner.to_json()
-        }
+    def is_owner(self, user_id):
+        return self.owner_id == user_id
+
+    def is_user(self, user_id):
+        return (u.id == user_id for u in self.users)
 
 class Invite(db.Model):
     __tablename__ = "invites"
@@ -84,12 +82,17 @@ class Project(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey("courses.id"))
     course = db.relationship(Course, backref=db.backref("projects"))
 
+    def get_group_for_user(self, user_id):
+        q = User.query.get(user_id).groups
+        g = self.groups.intersect(q).first()
+        return g
+
     def get_repo_for_user(self, user_id):
         if self.type == ProjectTypes.IND or self.type == ProjectTypes.GROUP_IND:
             return self.repos.filter_by(user_id=user_id).first()
         else:
-            q = User.get(user_id).groups
-            g = self.groups.intersect(q).first()
+            g = self.get_group_for_user(user_id)
+            if g is None: return None
             return g.repo
 
 class Group(db.Model):
@@ -100,7 +103,7 @@ class Group(db.Model):
     project_id = db.Column(db.Integer, db.ForeignKey("projects.id"), nullable=False)
     project = db.relationship(Project, backref=db.backref("groups", lazy='dynamic', cascade="all, delete"))
 
-    users = db.relationship(User, secondary=assignments, backref=db.backref("groups"))
+    users = db.relationship(User, secondary=assignments, backref=db.backref("groups", lazy='dynamic'))
 
 class Repo(db.Model):
     __tablename__ = "repos"

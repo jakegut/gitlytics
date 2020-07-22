@@ -9,7 +9,10 @@ export default function CourseListItem({course}){
             <Card style={{margin: "8px"}}>
             <CardContent style={{minHeight: "150px"}}>
                 <Typography variant="h5">
-                {course.name}
+                    {course.name}
+                </Typography>
+                <Typography>
+                    Owned by: {course.owner.username}
                 </Typography>
             </CardContent>
             <CardActions>

@@ -1,22 +1,36 @@
-import React from 'react'
-import { Card, CardContent, Typography, CardHeader, IconButton, MenuItem } from '@material-ui/core'
+import React, { useContext } from 'react'
+import { Card, CardContent, Typography, CardHeader, IconButton, MenuItem, CardActions, Button } from '@material-ui/core'
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import { UserContext } from '../../UserContext';
+import { useParams } from 'react-router-dom';
 
 export default function ProjectListItem(props){
-    const {project, openEditMenu} = props
+    const {project, openEditMenu, openAssignRepo} = props
+
+    const {user} = useContext(UserContext)
 
     function handleOpen(event){
         openEditMenu(event, project.id)
+    }
+
+    function isOwner(){
+        return user.owned_courses.includes(project.course_id)
+    }
+
+    function handleDialogOpen(event){
+        event.preventDefault()
+        openAssignRepo(project)
     }
 
     return (
         <Card style={{margin: "8px"}}>
             <CardHeader
                     title={project.name}
-                    action={
+                    action={ isOwner() && (
                         <IconButton onClick={handleOpen}>
                             <MoreVertIcon />
                         </IconButton>
+                    )
                     }
                 />
             <CardContent>
@@ -29,6 +43,13 @@ export default function ProjectListItem(props){
                     {new Date(project.start_date).toLocaleString()} - {new Date(project.due_date).toLocaleString()}
                 </Typography>
             </CardContent>
+            <CardActions>
+                {Object.keys(project.user_repo).length === 0 && (
+                    <Button onClick={handleDialogOpen}>
+                        Assign a Repo
+                    </Button>
+                )}
+            </CardActions>
         </Card>
     )
 }
