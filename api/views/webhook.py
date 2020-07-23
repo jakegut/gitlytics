@@ -17,8 +17,9 @@ def push_hook(data):
         return
 
     for commit in data['commits']:
+        print(commit, flush=True)
         data = GitData()
-        data.repo_id = commit['id']
+        data.repo_id = repo.id
         data.sha = commit['sha']
         data.api_url = commit['url']
         db.session.add(data)
