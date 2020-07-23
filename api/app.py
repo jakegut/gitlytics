@@ -18,7 +18,7 @@ login_manager = LoginManager()
 migrate = Migrate()
 jwt = JWTManager()
 WEBHOOK = GithubWebhook()
-celery = Celery(__name__, broker=settings.CELERY_BROKER)
+celery = Celery(__name__, broker=settings.CELERY_BROKER, include=['tasks'])
 
 
 def create_app():
