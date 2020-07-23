@@ -4,8 +4,8 @@ from flask import current_app
 
 @WEBHOOK.hook()
 def push_hook(data):
-    if data['ref'] != "refs/head/master":
-        print("MASTER AIGNT GOT HEAD")
+    if data['ref'] != "refs/heads/master":
+        print("MASTER AIGNT GOT HEAD", flush=True)
         return
 
     repo_name = data['repository']['full_name']
@@ -13,7 +13,7 @@ def push_hook(data):
 
     #TODO: delete webhook if repo is not found
     if repo is None:
-        print("Where the repo at?")
+        print("Where the repo at?", flush=True)
         return
 
     for commit in data['commits']:
@@ -26,6 +26,7 @@ def push_hook(data):
     db.session.commit()
 
     git = current_app.celery.delay()
+    print("finished??!", flush=True)
 
 @WEBHOOK.hook(event_type="ping")
 def ping_hook(data):
