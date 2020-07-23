@@ -1,6 +1,6 @@
 from models import GitData, Repo
 from app import WEBHOOK, db
-from flask import current_app
+from tasks import update_git_data
 
 @WEBHOOK.hook()
 def push_hook(data):
@@ -26,7 +26,7 @@ def push_hook(data):
 
     db.session.commit()
 
-    git = current_app.celery.delay()
+    git = update_git_data.delay()
     print("finished??!", flush=True)
 
 @WEBHOOK.hook(event_type="ping")
