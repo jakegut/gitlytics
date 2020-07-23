@@ -1,0 +1,24 @@
+version: '3'
+services:
+  api:
+    build: ./api
+    environment:
+      - APP_MODULE="app:api"
+      - WORKERS_PER_CORE="1"
+      - FLASK_ENV="production"
+      - SCRIPT_NAME=/api
+      - PORT="5000"
+    expose:
+      - "5000"
+  
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.prod
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+      
+  worker:
+    build: ./api
