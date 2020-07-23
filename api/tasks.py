@@ -31,8 +31,8 @@ def update_git_data():
             commit.contributor_user = commit_data['author']['login']
             commit.additions = commit_data['stats']['additions']
             commit.deletions = commit_data['stats']['deletions']
-        except KeyError:
-            print("KEY ERROR")
+        except KeyError as e:
+            print("KEY ERROR", e)
             continue
 
     db.session.commit()
