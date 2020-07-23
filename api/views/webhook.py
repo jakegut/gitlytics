@@ -4,7 +4,7 @@ from flask import current_app
 
 @WEBHOOK.hook()
 def push_hook(data):
-    if data.ref != "refs/head/master":
+    if data['ref'] != "refs/head/master":
         return
 
     repo_name = data.repository.full_name
@@ -16,9 +16,9 @@ def push_hook(data):
 
     for commit in data.commits:
         data = GitData()
-        data.repo_id = repo.id
-        data.sha = commit.sha
-        data.api_url = commit.url
+        data['repo_id'] = repo.id
+        data['sha'] = commit.sha
+        data['api_url'] = commit.url
         db.session.add(data)
 
     db.session.commit()
