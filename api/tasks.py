@@ -32,6 +32,7 @@ def update_git_data():
             commit.additions = commit_data['stats']['additions']
             commit.deletions = commit_data['stats']['deletions']
         except KeyError:
+            print("KEY ERROR")
             continue
 
     db.session.commit()
