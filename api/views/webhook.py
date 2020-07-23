@@ -5,20 +5,22 @@ from flask import current_app
 @WEBHOOK.hook()
 def push_hook(data):
     if data['ref'] != "refs/head/master":
+        print("MASTER AIGNT GOT HEAD")
         return
 
-    repo_name = data.repository.full_name
+    repo_name = data['repository']['full_name']
     repo = Repo.query.filter_by(name=repo_name).first()
 
     #TODO: delete webhook if repo is not found
     if repo is None:
+        print("Where the repo at?")
         return
 
-    for commit in data.commits:
+    for commit in data['commits']:
         data = GitData()
-        data['repo_id'] = repo.id
-        data['sha'] = commit.sha
-        data['api_url'] = commit.url
+        data.repo_id = repo['id']
+        data.sha = commit['sha']
+        data.api_url = commit['url']
         db.session.add(data)
 
     db.session.commit()
