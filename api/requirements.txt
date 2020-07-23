@@ -37,3 +37,5 @@ URLObject==2.4.3
 Werkzeug==1.0.1
 WTForms==2.3.1
 flask-github-webhook==0.1.0
+flask-cors==3.0.8
+celery[redis]

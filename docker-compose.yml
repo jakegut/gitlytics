@@ -30,6 +30,18 @@ services:
         - 'postgres_pl:/var/lib/postgresql/data'
     ports:
         - '5432:5432'
+        
+  redis:
+    image: redis:5.0.5
+   
+  worker:
+    build: ./api
+    command: >
+      celery -A celery_worker.celery worker --loglevel=info
+    volumes:
+      - './api:/usr/src/app'
+    depends_on:
+      - redis
 
 volumes:
   postgres_pl:

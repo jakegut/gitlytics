@@ -6,6 +6,7 @@ from marshmallow import ValidationError
 from app import db
 from models import Course, Invite, Project, Group, User, ProjectTypes, Repo
 import views.projects.schemas as ps
+from .utils import add_webhook
 import settings
 
 projects = Blueprint('projects', __name__)
@@ -64,7 +65,7 @@ def delete_project(project_id):
 @projects.route("/<int:project_id>/repos", methods=['POST'])
 @jwt_required
 def add_repo(project_id):
-    data = request.json()
+    data = request.get_json()
     project = Project.query.get(project_id)
     if project is None:
         return jsonify(message="Project not found"), 404
@@ -82,6 +83,11 @@ def add_repo(project_id):
             return jsonify(message="Not part of group"), 400
         repo.group_id = g.id
 
+    webhook = add_webhook(repo.name, current_user.oauth_token)
+    if 'id' not in webhook:
+        return jsonify(error="Could not create webhook", data=webhook), 401
+    repo.webhook_id = webhook['id']
+
     db.session.add(repo)
     db.session.commit()
     return jsonify(repo=ps.RepoSchema().dump(repo)), 201
@@ -90,6 +96,6 @@ def add_repo(project_id):
 @jwt_required
 def search_user_repos():
     github = OAuth2Session(settings.GITHUB_OAUTH_CLIENT_ID, token={"access_token": current_user.oauth_token})
-    resp = github.get(f"{settings.GITHUB_API_BASE_URL}user/repos?sort=pushed").json()
+    resp = github.get(f"{settings.GITHUB_API_BASE_URL}user/repos?sort=pushed&affiliation=owner").json()
 
     return jsonify([{"full_name": u['full_name']} for u in resp])

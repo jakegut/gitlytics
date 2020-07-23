@@ -9,3 +9,8 @@ export function getAxiosConfig(){
         responseType: "json"
     }
 }
+
+export function formatDate(date){
+    var options = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+    return date.toLocaleDateString('en-US', options)
+}

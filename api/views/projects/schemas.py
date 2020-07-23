@@ -9,7 +9,7 @@ class GroupSchema(Schema):
 
 class RepoSchema(Schema):
     id = fields.Int()
-    url = fields.Str()
+    name = fields.Str()
     project_id = fields.Int()
     user_id = fields.Int()
     group = fields.Nested(GroupSchema)

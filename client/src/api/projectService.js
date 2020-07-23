@@ -21,3 +21,10 @@ export function getRepos(){
         return response.data
     })
 }
+
+export function addRepo(project_id, repo_name){
+    return axios.post(`/projects/${project_id}/repos`, {repo_name}, getAxiosConfig())
+    .then(response => {
+        return response.data
+    })
+}

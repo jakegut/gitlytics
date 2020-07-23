@@ -110,6 +110,7 @@ class Repo(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text, unique=True)
+    webhook_id = db.Column(db.Integer, primary_key=True)
 
     project_id = db.Column(db.Integer, db.ForeignKey("projects.id"))
     project = db.relationship(Project, backref=db.backref("repos", lazy='dynamic'), cascade="all, delete")
@@ -119,3 +120,17 @@ class Repo(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     user = db.relationship(User, backref=db.backref("repos"))
+
+class GitData(db.Model):
+    __tablename__ = "gitdata"
+
+    id = db.Column(db.Integer, primary_key=True)
+    sha = db.Column(db.Text, nullable=False)
+    api_url = db.Column(db.Text)
+    additions = db.Column(db.Integer)
+    deletions = db.Column(db.Integer)
+    date = db.Column(db.DateTime)
+    contributor_user = db.Column(db.Text)
+
+    repo_id = db.Column(db.Integer, db.ForeignKey("repos.id"))
+    repo = db.relationship(Repo, backref=db.backref("gitdata", lazy='dynamic'))

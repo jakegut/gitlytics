@@ -3,6 +3,7 @@ import { Card, CardContent, Typography, CardHeader, IconButton, MenuItem, CardAc
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { UserContext } from '../../UserContext';
 import { useParams } from 'react-router-dom';
+import { formatDate } from '../../api/util';
 
 export default function ProjectListItem(props){
     const {project, openEditMenu, openAssignRepo} = props
@@ -40,13 +41,22 @@ export default function ProjectListItem(props){
                 <Typography>
                     {project.description}
                     <br />
-                    {new Date(project.start_date).toLocaleString()} - {new Date(project.due_date).toLocaleString()}
+                    {formatDate(new Date(project.start_date))} - {formatDate(new Date(project.due_date))}
                 </Typography>
             </CardContent>
             <CardActions>
-                {Object.keys(project.user_repo).length === 0 && (
+                {isOwner() && (
+                    <Button>
+                        View project
+                    </Button>
+                )}
+                {Object.keys(project.user_repo).length === 0 ? (
                     <Button onClick={handleDialogOpen}>
                         Assign a Repo
+                    </Button>
+                ) : (
+                    <Button>
+                        View Repo: {project.user_repo.name}
                     </Button>
                 )}
             </CardActions>
