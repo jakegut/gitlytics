@@ -25,7 +25,7 @@ def update_git_data():
     for commit in gitdata:
         user = commit.repo.user
         session = OAuth2Session(settings.GITHUB_OAUTH_CLIENT_ID, token={"access_token": user.oauth_token})
-        commit_data = session.get(f'{settings.GITHUB_API_BASE_URL}repos/{commit.repo.name}/{commit.sha}').json()
+        commit_data = session.get(f'{settings.GITHUB_API_BASE_URL}repos/{commit.repo.name}/commits/{commit.sha}').json()
         try:
             commit.date = commit_data['commit']['author']['date']
             commit.contributor_user = commit_data['author']['login']
