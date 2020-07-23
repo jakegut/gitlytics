@@ -6,7 +6,8 @@ export function getAxiosConfig(){
             "Content-Type": 'application/json',
             "Authorization": `Bearer ${getToken()}`
         },
-        responseType: "json"
+        responseType: "json",
+        baseURL: '/api'
     }
 }
 

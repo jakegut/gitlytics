@@ -12,7 +12,9 @@ services:
     stdin_open: true
 
   api:
-    build: ./api
+    build:
+      context: ./api
+      dockerfile: Dockerfile-dev
     command: >
       gunicorn -b :5000 --reload "app:api"
     volumes:
@@ -21,6 +23,8 @@ services:
       - "5000:5000"
     depends_on:
       - postgres
+    environment:
+      - SCRIPT_NAME=/api
 
   postgres:
     image: 'postgres:9.5'
@@ -35,7 +39,9 @@ services:
     image: redis:5.0.5
    
   worker:
-    build: ./api
+    build:
+      context: ./api
+      dockerfile: Dockerfile-dev
     command: >
       celery -A celery_worker.celery worker --loglevel=info
     volumes:

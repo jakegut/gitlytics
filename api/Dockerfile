@@ -1,11 +1,3 @@
-FROM python:3.8-slim
+FROM tiangolo/meinheld-gunicorn-flask:python3.7
 
-RUN apt-get update && apt-get install -y gcc unixodbc-dev libpq-dev
-
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
-
-COPY ./requirements.txt requirements.txt
-RUN pip install -r requirements.txt
-
-COPY . .
+COPY . /app
