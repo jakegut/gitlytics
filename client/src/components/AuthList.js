@@ -10,13 +10,15 @@ import List from '@material-ui/core/List';
 import {Link} from 'react-router-dom'
 
 import {UserContext} from '../UserContext';
+import axios from 'axios';
+import { getAxiosConfig } from '../api/util';
 
 export default function AuthList(){
     const {user, setUser} = useContext(UserContext);
     
     function getAuthLink(){
-        fetch("/auth/login")
-        .then(response => response.json())
+        axios.get("/auth/login", getAxiosConfig())
+        .then(response => response.data)
         .then(data => {
             window.location = data.url;
         })
