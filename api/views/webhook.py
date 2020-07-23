@@ -18,7 +18,6 @@ def push_hook(data):
         data = GitData()
         data.repo_id = repo.id
         data.sha = commit['id']
-        data.api_url = commit['url']
         db.session.add(data)
 
     db.session.commit()
