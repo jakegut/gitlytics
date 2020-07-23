@@ -25,7 +25,8 @@ def update_git_data():
     for commit in gitdata:
         user = commit.repo.user
         session = OAuth2Session(settings.GITHUB_OAUTH_CLIENT_ID, token={"access_token": user.oauth_token})
-        commit_data = session.get(f'{settings.GITHUB_API_BASE_URL}repos/{commit.repo.name}/commits/{commit.sha}').json()
+        string = f'{settings.GITHUB_API_BASE_URL}repos/{commit.repo.name}/commits/{commit.sha}'
+        commit_data = session.get(string).json()
         try:
             commit.date = commit_data['commit']['author']['date']
             commit.contributor_user = commit_data['author']['login']
@@ -33,6 +34,7 @@ def update_git_data():
             commit.deletions = commit_data['stats']['deletions']
         except KeyError as e:
             print("KEY ERROR: ", str(e))
+            print(string)
             print(commit_data)
             continue
 
