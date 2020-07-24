@@ -40,6 +40,7 @@ export default function AssignRepo(props){
         .then(data => {
             console.log(data);
             setLoading(false)
+            handleClose();
         })
         .catch(error => {
             console.log(error.response)
