@@ -1,7 +1,9 @@
 version: '3'
 services:
   client:
-    build: ./client
+    build:
+      context: ./client
+      dockerfile: Dockerfile
     volumes:
       - './client:/app'
       - '/app/node_modules'

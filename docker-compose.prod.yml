@@ -17,8 +17,24 @@ services:
       dockerfile: Dockerfile.prod
     depends_on:
       - api
+    expose:
+      - "3000"
+      
+  proxy:
+    restart: unless-stopped
+    image: staticfloat/nginx-certbot
     ports:
-      - "80:80"
+      - 80:80/tcp
+      - 443:443/tcp
+    environment:
+      - CERTBOT_EMAIL=jakegut0108@gmail.com
+    volumes:
+      - ./proxy/conf.d:/etc/ngnix/user.conf.d:ro
+      - letsencrypt:/etc/letsencrypt
       
   worker:
     build: ./api
+    
+volumes:
+  letsencrypt:
+  
