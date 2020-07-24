@@ -9,7 +9,7 @@ def add_webhook(full_name, oauth_token):
             'url': settings.GITHUB_WEBHOOK_URL,
             'content_type': 'json',
             'secret': settings.GITHUB_WEBHOOK_SECRET,
-            'insecure_ssl': '1'
+            'insecure_ssl': ('https' in settings.GITHUB_WEBHOOK_URL)
         }
     }
     github = OAuth2Session(settings.GITHUB_OAUTH_CLIENT_ID, token={"access_token": oauth_token})
