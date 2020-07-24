@@ -29,7 +29,7 @@ services:
     environment:
       - CERTBOT_EMAIL=jakegut0108@gmail.com
     volumes:
-      - ./proxy/conf.d:/etc/ngnix/user.conf.d:ro
+      - ./proxy/conf.d:/etc/nginx/user.conf.d
       - letsencrypt:/etc/letsencrypt
       
   worker:
