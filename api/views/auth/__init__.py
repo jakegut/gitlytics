@@ -7,6 +7,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from app import db
 from utils import generate_token
 import settings
+from marshmallow import Schema, fields
 
 import requests as req
 
@@ -14,6 +15,16 @@ auth = Blueprint('auth', __name__)
 
 client_id = settings.GITHUB_OAUTH_CLIENT_ID,
 client_secret = settings.GITHUB_OAUTH_CLIENT_SECRET
+
+class AuthUserSchema(Schema):
+    username = fields.Str()
+    avatar_url = fields.Str()
+    owned_courses = fields.Method("get_owned_courses_array")
+
+    def get_owned_courses_array(self, obj):
+        return [c.id for c in obj.owned_courses]
+
+user_schema = AuthUserSchema()
 
 @auth.route("/login")
 def index():
@@ -77,9 +88,7 @@ def callback():
     access_token = create_access_token(user)
     ret = {
         "access_token": access_token,
-        "user":{
-            "username": user.username
-        }
+        "user": user_schema.dump(user)
     }
     return jsonify(ret)
 
@@ -89,7 +98,4 @@ def get_user():
     user = User.query.filter_by(username=get_jwt_identity()).first()
     if user is None:
         return jsonify({"error": "error"})
-    return jsonify({"user": {
-        "username": user.username,
-        "owned_courses": [c.id for c in user.owned_courses],
-        "avatar_url": user.avatar_url}})
+    return jsonify({"user": user_schema.dump(user)})

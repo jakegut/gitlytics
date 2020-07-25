@@ -4,11 +4,13 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { UserContext } from '../../UserContext';
 import { useParams } from 'react-router-dom';
 import { formatDate } from '../../api/util';
+import LinkButton from '../LinkButton';
 
 export default function ProjectListItem(props){
     const {project, openEditMenu, openAssignRepo} = props
 
     const {user} = useContext(UserContext)
+    const{course_id} = useParams()
 
     function handleOpen(event){
         openEditMenu(event, project.id)
@@ -46,18 +48,18 @@ export default function ProjectListItem(props){
             </CardContent>
             <CardActions>
                 {isOwner() && (
-                    <Button>
-                        View project
-                    </Button>
+                    <LinkButton to={`/courses/${course_id}/project/${project.id}/repos`}>
+                        View Repos
+                    </LinkButton>
                 )}
                 {Object.keys(project.user_repo).length === 0 ? (
                     <Button onClick={handleDialogOpen}>
                         Assign a Repo
                     </Button>
                 ) : (
-                    <Button>
+                    <LinkButton to={`/courses/${course_id}/project/${project.id}/repos`}>
                         View Repo: {project.user_repo.name}
-                    </Button>
+                    </LinkButton>
                 )}
             </CardActions>
         </Card>

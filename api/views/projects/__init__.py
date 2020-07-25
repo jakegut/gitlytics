@@ -92,6 +92,35 @@ def add_repo(project_id):
     db.session.commit()
     return jsonify(repo=ps.RepoSchema().dump(repo)), 201
 
+@projects.route("/<int:project_id>/repos")
+@jwt_required
+def get_repo(project_id):
+    project = Project.query.get(project_id)
+    if project is None:
+        return jsonify(message="Project not found"), 404
+
+    if project.course.is_owner(current_user.id):
+        return jsonify(repos=ps.RepoSchema(many=True).dump(project.repos.all()))
+    elif project.course.is_user(current_user.id):
+        repo = project.get_repo_for_user(current_user.id)
+        if repo is None:
+            return jsonify(message="No repo is assigned"), 404
+        return jsonify(repo=ps.RepoSchema().dump(repo)), 200
+
+    return jsonify(message="Unauthorized"), 403
+
+@projects.route("/repos/<int:repo_id>")
+@jwt_required
+def get_repo_data(repo_id):
+    repo = Repo.query.get(repo_id)
+    if repo is None:
+        return jsonify(message="Repo not found"), 404
+
+    if repo.project.course.is_owner(current_user.id) or repo in current_user.repos:
+        return jsonify(gitdata=ps.GitdataSchema(many=True).dump(repo.gitdata))
+    else:
+        return jsonify(message="Unauthorized to view repo"), 403
+
 @projects.route("/search/repo")
 @jwt_required
 def search_user_repos():

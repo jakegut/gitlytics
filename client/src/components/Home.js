@@ -13,7 +13,7 @@ export default function Home() {
             style={{minHeight: "calc(100vh - 200px)"}}
             >
                 <Grid item>
-                    <Logo width="400" height="auto" fill="#F44336"/>
+                    <Logo width="300" height="auto" fill="#F44336"/>
                 </Grid>
                 <Grid item>
                     <Typography variant="h2" style={{fontWeight: "600"}}>

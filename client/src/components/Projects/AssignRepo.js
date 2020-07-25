@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
   }));
 
 export default function AssignRepo(props){
-    const {handleClose, project} = props
+    const {handleClose, project, setAssignedRepo} = props
 
     const classes = useStyles();
     const [repos, setRepos] = useState([])
@@ -38,7 +38,7 @@ export default function AssignRepo(props){
         event.preventDefault()
         addRepo(project.id, repo.full_name)
         .then(data => {
-            console.log(data);
+            setAssignedRepo(project.id, data.repo)
             setLoading(false)
             handleClose();
         })

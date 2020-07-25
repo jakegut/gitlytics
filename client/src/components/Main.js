@@ -93,7 +93,7 @@ export default function Main() {
           >
             <MenuIcon />
           </IconButton>
-          <Logo height="40" width="auto" style={{fill: "white", paddingRight: '8px'}}/>
+          <Logo height="40" width="40" style={{fill: "white", paddingRight: '8px'}}/>
           <Typography variant="h6" noWrap>
             gitlytics
           </Typography>

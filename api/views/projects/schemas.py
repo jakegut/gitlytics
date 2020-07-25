@@ -14,6 +14,13 @@ class RepoSchema(Schema):
     user_id = fields.Int()
     group = fields.Nested(GroupSchema)
 
+class GitdataSchema(Schema):
+    sha = fields.Str()
+    additions = fields.Int()
+    deletions = fields.Int()
+    date = fields.DateTime()
+    contributor_user = fields.Str()
+
 class ProjectCreateSchema(Schema):
     name = fields.Str(required=True)
     description = fields.Str(missing=None)

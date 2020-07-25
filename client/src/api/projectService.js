@@ -28,3 +28,17 @@ export function addRepo(project_id, repo_name){
         return response.data
     })
 }
+
+export function getProjectRepo(project_id){
+    return axios.get(`/projects/${project_id}/repos`, getAxiosConfig())
+    .then(response => {
+        return response.data
+    })
+}
+
+export function getGitdata(repo_id){
+    return axios.get(`/projects/repos/${repo_id}`, getAxiosConfig())
+    .then(response => {
+        return response.data
+    })
+}

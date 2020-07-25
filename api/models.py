@@ -110,7 +110,7 @@ class Repo(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text, unique=True)
-    webhook_id = db.Column(db.Integer, primary_key=True)
+    webhook_id = db.Column(db.Integer)
 
     project_id = db.Column(db.Integer, db.ForeignKey("projects.id"))
     project = db.relationship(Project, backref=db.backref("repos", lazy='dynamic'), cascade="all, delete")

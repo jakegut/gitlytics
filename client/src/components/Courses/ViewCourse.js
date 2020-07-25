@@ -44,6 +44,13 @@ export default function ViewCourse(){
         setData(cpy)
     }
 
+    function replaceProject(project_id, proj){
+        let cpy = {...data}
+        let idx = cpy.course.projects.findIndex(el => el.id === project_id)
+        cpy.course.projects[idx] = proj
+        setData(cpy)
+    }
+
     return (
         <Container maxWidth="lg">
         {data.course !== undefined && (
@@ -67,7 +74,7 @@ export default function ViewCourse(){
                             </IconButton>
                         )}
                     </Typography>
-                    {data.course.projects && <ProjectList projects={data.course.projects} deleteProject={deleteProject}/>}
+                    {data.course.projects && <ProjectList projects={data.course.projects} deleteProject={deleteProject} replaceProject={replaceProject} />}
                 </Grid>
                 <Grid item xs={6}>
                     <Typography variant="h4">

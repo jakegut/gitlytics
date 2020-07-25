@@ -4,7 +4,7 @@ import VertEdit from './VertEdit';
 import AssignRepo from './AssignRepo';
 
 export default function ProjectList(props){
-    const {projects, deleteProject} = props
+    const {projects, deleteProject, replaceProject} = props
     const [anchorEl, setAnchorEl] = useState(null);
     const [projectID, setProjectID] = useState(null);
     const [project, setProject] = useState(null)
@@ -31,13 +31,19 @@ export default function ProjectList(props){
         setProject(project)
     }
 
+    function setAssignedRepo(project_id, repo){
+        let proj = projects.find(p => p.id === project_id)
+        proj.user_repo = repo
+        replaceProject(proj)
+    }
+
     return (
         <div>
             {projects.map(project => (
                 <ProjectListItem key={project.id} project={project} openEditMenu={openEditMenu} openAssignRepo={openDialog} />
             ))}
             <VertEdit handleClose={handleClose} anchorEl={anchorEl} projectID={projectID} deleteProject={removeProject}/>
-            <AssignRepo handleClose={handleDialogClose} project={project} />
+            <AssignRepo handleClose={handleDialogClose} project={project} setAssignedRepo={setAssignedRepo} />
         </div>
     )
 }

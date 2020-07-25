@@ -13,6 +13,7 @@
     "@testing-library/user-event": "^7.2.1",
     "axios": "^0.19.2",
     "moment": "^2.27.0",
+    "nivo": "^0.31.0",
     "react": "^16.13.1",
     "react-beautiful-dnd": "^13.0.0",
     "react-dom": "^16.13.1",
