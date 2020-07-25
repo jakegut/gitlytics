@@ -31,7 +31,7 @@ export default function ViewRepos(){
                             options={repos}
                             getOptionLabel={(option) => option.name}
                             onChange={(e, v) => setRepo(v)}
-                            renderInput={(params) => <TextField {...params} label="Combo box" variant="outlined" />}
+                            renderInput={(params) => <TextField {...params} label="Repos" variant="outlined" />}
                         />
                     </Grid>
                 </Grid>

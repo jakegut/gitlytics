@@ -7,6 +7,7 @@ export default function ViewRepo(props){
     const [gitdata, setGitdata] = useState(null)
 
     useEffect(() => {
+        setGitdata(null)
         getGitdata(repo.id)
         .then(data => {
             setGitdata(data.gitdata)
