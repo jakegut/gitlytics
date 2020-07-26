@@ -74,6 +74,9 @@ def create_app():
     from views.projects import projects
     app.register_blueprint(projects, url_prefix="/projects")
 
+    from views.stats import stats
+    app.register_blueprint(stats, url_prefix="/stats")
+
     from views import webhook
 
     return app

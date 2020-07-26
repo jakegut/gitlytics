@@ -60,12 +60,12 @@ export default function ViewCourse(){
                 justify="flex-start"
                 alignItems="flex-start"
             >
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12}>
                     <Typography variant="h3">
                         {data.course.name}
                     </Typography>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item sm={12} md={6}>
                     <Typography variant="h4">
                         Projects
                         {data.invites !== undefined && (
@@ -76,7 +76,7 @@ export default function ViewCourse(){
                     </Typography>
                     {data.course.projects && <ProjectList projects={data.course.projects} deleteProject={deleteProject} replaceProject={replaceProject} />}
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item sm={12} md={6}>
                     <Typography variant="h4">
                         Students
                     </Typography>

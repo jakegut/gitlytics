@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Grid, Typography, Container, TableContainer, Paper, Table, TableHead, TableCell, TableRow, TableBody, CircularProgress } from '@material-ui/core';
 import { getGitdata } from '../../api/projectService';
+import RepoCommits from '../Stats/RepoCommits';
 
 export default function ViewRepo(props){
     const {repo} = props;
@@ -22,8 +23,9 @@ export default function ViewRepo(props){
                         Stats for: {repo.name}
                     </Typography>
                 </Grid>
+                {gitdata ? (
                 <Grid item xs={12}>
-                    {gitdata ? (
+                    
                     <TableContainer component={Paper}>
                         <Table>
                             <TableHead>
@@ -48,7 +50,11 @@ export default function ViewRepo(props){
                             </TableBody>
                         </Table>
                     </TableContainer>
-                    ) : <CircularProgress />}
+                    
+                </Grid> ) : <CircularProgress />}
+
+                <Grid item xs={12}>
+                    <RepoCommits repo_id={repo.id} />
                 </Grid>
             </Grid>
         </Container>

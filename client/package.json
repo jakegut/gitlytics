@@ -8,6 +8,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@material-ui/pickers": "^3.2.10",
+    "@nivo/line": "^0.62.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
@@ -19,6 +20,7 @@
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.1",
+    "recharts": "^1.8.5",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.2"
   },
