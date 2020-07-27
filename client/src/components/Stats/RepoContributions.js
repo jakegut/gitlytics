@@ -1,0 +1,76 @@
+import React, { useState, useEffect } from 'react'
+import { Typography, Select, MenuItem, Paper, Tooltip } from '@material-ui/core';
+import { getRepoContribs } from '../../api/statsService';
+import { ResponsiveContainer, CartesianGrid, XAxis, YAxis, Area, AreaChart, Legend } from 'recharts';
+import moment from 'moment'
+
+export default function RepoContributions(props){
+    const { repo_id } = props;
+    const [data, setData] = useState([])
+    const [value, setValue] = useState('')
+    const [areaData, setAreaData] = useState(null)
+
+    useEffect(() => {
+        setAreaData(null)
+        getRepoContribs(repo_id)
+        .then(data => {
+            setData(data.result)
+        })
+    }, [repo_id])
+
+    function handleChange(event){
+        setValue(event.target.value)
+        findAreaData(event.target.value)
+    }
+
+    function findAreaData(v){
+        let d = data.find(d => d.name === v)
+        setAreaData(d)
+    }
+
+    return (
+        <React.Fragment>
+            {data && (
+                <Paper style={{padding: "8px"}}>
+                    <Typography variant="h5" style={{widht: "100%", textAlign: "center", marginTop: "8px"}}>
+                        Contibutions over time for:
+                        <Select style={{marginLeft:"8px"}} value={value} onChange={handleChange}>
+                            {data.map(d => (
+                                <MenuItem key={d.name} value={d.name}>{d.name}</MenuItem>
+                            ))}
+                        </Select>
+                    </Typography>
+                    {areaData && (
+                    <ResponsiveContainer height={400}>
+                        <AreaChart key={"HEELP" + value} syncId="repo" margin={{ top: 20, right: 30, left: 0, bottom: 0 }} data={areaData.data}>
+                            <CartesianGrid />
+                            <XAxis 
+                                dataKey="date"
+                                type="number"
+                                scale="utc"
+                                domain={['auto', 'auto']}
+                                tickFormatter={(unixTime) => moment.utc(unixTime).format('MM-DD-YYYY')}
+                                name='Time'
+                                stroke="#bfbfbf"
+                            />
+                            <YAxis stroke = "#bfbfbf"/>
+                            <Tooltip 
+                                active={true}
+                                wrapperStyle={{
+                                visibility: 'visible',
+                                }}
+                                contentStyle={{backgroundColor: "#363636", borderRadius: "5px", border: "none"}}
+                                labelFormatter={(unixTime) => moment.utc(unixTime).format('MM-DD-YYYY')}
+                                stackId="1"
+                            />
+                            <Legend />
+                            <Area dataKey="additions" stackId="1" stroke="green" fill="green"/>
+                            <Area dataKey="deletions" stackId="1" stroke="red" fill="red" />
+                        </AreaChart>
+                    </ResponsiveContainer>
+                    )}
+                </Paper>
+            )}
+        </React.Fragment>
+    )
+}

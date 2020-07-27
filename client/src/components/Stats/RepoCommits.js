@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { getRepoCommits } from '../../api/statsService';
-import { LineChart, CartesianGrid, Tooltip, YAxis, Legend, Line, XAxis } from 'recharts';
+import { LineChart, CartesianGrid, Tooltip, YAxis, Legend, Line, XAxis, ResponsiveContainer, Brush } from 'recharts';
 import moment from 'moment';
+import { Typography, Paper } from '@material-ui/core';
 
 export default function RepoCommits(props){
     const {repo_id} = props;
@@ -17,29 +18,35 @@ export default function RepoCommits(props){
     }, [repo_id]);
 
     return (
-        <React.Fragment>
+        <Paper style={{padding: "8px"}}>
+            <Typography variant="h5" style={{widht: "100%", textAlign: "center", marginTop: "8px"}}>
+                Commits over time
+            </Typography>
             {data && (
-                <LineChart key={"HEELP" + repo_id} width={730} height={250} data={data.data}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                        dataKey="date"
-                        type="number"
-                        scale="utc"
-                        domain = {['auto', 'auto']}
-                        tickFormatter = {(unixTime) => moment(unixTime).format('MM-DD-YYYY')}
-                        name = 'Time'
-                    />
-                    <YAxis />
-                    <Tooltip 
-                        contentStyle={{backgroundColor: "#424242"}}
-                        labelFormatter={(unixTime) => moment(unixTime).format('MM-DD-YYYY')}
-                    />
-                    <Legend />
-                    {data.lines.map((line) => (
-                        <Line key={line} dataKey={line} />
-                    ))}
-                </LineChart>
+                <ResponsiveContainer height={400}>
+                    <LineChart key={"HEELP" + repo_id} syncId="repo" data={data.data} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+                        <CartesianGrid />
+                        <XAxis 
+                            dataKey="date"
+                            type="number"
+                            scale="utc"
+                            domain={['auto', 'auto']}
+                            tickFormatter={(unixTime) => moment.utc(unixTime).format('MM-DD-YYYY')}
+                            name='Time'
+                            stroke="#bfbfbf"
+                        />
+                        <YAxis stroke = "#bfbfbf"/>
+                        <Tooltip 
+                            contentStyle={{backgroundColor: "#363636", borderRadius: "5px", border: "none"}}
+                            labelFormatter={(unixTime) => moment.utc(unixTime).format('MM-DD-YYYY')}
+                        />
+                        <Legend />
+                        {data.lines.map((line) => (
+                            <Line key={line} dataKey={line} />
+                        ))}
+                    </LineChart>
+                </ResponsiveContainer>
             )}
-        </React.Fragment>
+        </Paper>
     )
 }

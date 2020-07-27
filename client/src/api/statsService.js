@@ -7,3 +7,10 @@ export function getRepoCommits(repo_id){
         return response.data
     })
 }
+
+export function getRepoContribs(repo_id){
+    return axios.get(`/stats/repo/${repo_id}/contributions`, getAxiosConfig())
+    .then(response => {
+        return response.data
+    })
+}

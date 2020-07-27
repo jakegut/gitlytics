@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Grid, Typography, Container, TableContainer, Paper, Table, TableHead, TableCell, TableRow, TableBody, CircularProgress } from '@material-ui/core';
 import { getGitdata } from '../../api/projectService';
 import RepoCommits from '../Stats/RepoCommits';
+import RepoContributions from '../Stats/RepoContributions';
 
 export default function ViewRepo(props){
     const {repo} = props;
@@ -16,8 +17,8 @@ export default function ViewRepo(props){
     }, [repo])
 
     return (
-        <Container maxWidth="lg" fixed>
-            <Grid container style={{margin: "8"}}>
+        <Container maxWidth="xl" fixed>
+            <Grid container style={{margin: "8"}} spacing={3}>
                 <Grid item xs={12}>
                     <Typography variant="h3">
                         Stats for: {repo.name}
@@ -26,7 +27,7 @@ export default function ViewRepo(props){
                 {gitdata ? (
                 <Grid item xs={12}>
                     
-                    <TableContainer component={Paper}>
+                    <TableContainer component={Paper} style={{overflowY: "auto", height: "500px"}}>
                         <Table>
                             <TableHead>
                                 <TableRow>
@@ -37,7 +38,7 @@ export default function ViewRepo(props){
                                     <TableCell>Deletions</TableCell>
                                 </TableRow>
                             </TableHead>
-                            <TableBody>
+                            <TableBody >
                                 {gitdata.map(data => (
                                     <TableRow key={data.sha}>
                                         <TableCell component="th" scope="row">{data.sha}</TableCell>
@@ -55,6 +56,9 @@ export default function ViewRepo(props){
 
                 <Grid item xs={12}>
                     <RepoCommits repo_id={repo.id} />
+                </Grid>
+                <Grid item xs={12}>
+                    <RepoContributions repo_id={repo.id} />
                 </Grid>
             </Grid>
         </Container>
