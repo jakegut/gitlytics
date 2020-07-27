@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { Typography, Select, MenuItem, Paper, Tooltip } from '@material-ui/core';
+import { Typography, Select, MenuItem, Paper } from '@material-ui/core';
 import { getRepoContribs } from '../../api/statsService';
-import { ResponsiveContainer, CartesianGrid, XAxis, YAxis, Area, AreaChart, Legend } from 'recharts';
+import { ResponsiveContainer, CartesianGrid, XAxis, YAxis, Area, AreaChart, Legend, Tooltip } from 'recharts';
 import moment from 'moment'
 
 export default function RepoContributions(props){
@@ -47,7 +47,7 @@ export default function RepoContributions(props){
                             <XAxis 
                                 dataKey="date"
                                 type="number"
-                                scale="utc"
+                                scale="time"
                                 domain={['auto', 'auto']}
                                 tickFormatter={(unixTime) => moment.utc(unixTime).format('MM-DD-YYYY')}
                                 name='Time'
@@ -64,8 +64,8 @@ export default function RepoContributions(props){
                                 stackId="1"
                             />
                             <Legend />
-                            <Area dataKey="additions" stackId="1" stroke="green" fill="green"/>
-                            <Area dataKey="deletions" stackId="1" stroke="red" fill="red" />
+                            <Area dataKey="additions" stackId="1" stroke="#3cfc49" fill="#3cfc49"/>
+                            <Area dataKey="deletions" stackId="1" stroke="#fc493c" fill="#fc493c" />
                         </AreaChart>
                     </ResponsiveContainer>
                     )}
