@@ -3,6 +3,7 @@ import { getRepoCommits } from '../../api/statsService';
 import { LineChart, CartesianGrid, Tooltip, YAxis, Legend, Line, XAxis, ResponsiveContainer, Brush } from 'recharts';
 import moment from 'moment';
 import { Typography, Paper } from '@material-ui/core';
+import { COLORS } from './RepoTotalContributions';
 
 export default function RepoCommits(props){
     const {repo_id} = props;
@@ -41,8 +42,8 @@ export default function RepoCommits(props){
                             labelFormatter={(unixTime) => moment.utc(unixTime).format('MM-DD-YYYY')}
                         />
                         <Legend />
-                        {data.lines.map((line) => (
-                            <Line key={line} dataKey={line} />
+                        {data.lines.map((line, i) => (
+                            <Line key={line} dataKey={line} fill={COLORS[i % COLORS.length]} stroke={COLORS[i % COLORS.length]}/>
                         ))}
                     </LineChart>
                 </ResponsiveContainer>

@@ -126,6 +126,7 @@ class GitData(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     sha = db.Column(db.Text, nullable=False, unique=True)
+    ref = db.Column(db.Text)
     api_url = db.Column(db.Text)
     additions = db.Column(db.Integer)
     deletions = db.Column(db.Integer)

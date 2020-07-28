@@ -85,6 +85,30 @@ def get_repo_contrib(repo_id):
 
     return jsonify(result=d), 200
 
+@stats.route("/repo/<int:repo_id>/total_contributions")
+@jwt_required
+def get_repo_total_contribs(repo_id):
+    repo = Repo.query.get(repo_id)
+    if repo is None:
+        return jsonify(message="Repo not found"), 404
+
+    if not (repo.project.course.is_owner(current_user.id) or repo in current_user.repos):
+        return jsonify(message="Unauthorized to view repo"), 403
+
+    query = ("SELECT contributor_user, COUNT(sha) AS commits "
+             "FROM gitdata "
+             f"WHERE repo_id = {repo.id} AND date > current_date - '30 days'::interval "
+             "GROUP BY 1 "
+             "ORDER BY 1;")
+
+    rows = db.session.execute(query)
+    data = []
+
+    for row in rows:
+        data.append({"name": row['contributor_user'], "commits": int(row['commits'])})
+
+    return jsonify(data=data), 200
+
 
 @stats.route("/populate", methods=['POST'])
 @jwt_required
@@ -109,3 +133,5 @@ def populate():
         if repo is not None:
             get_previous_commits.delay(repo.id, current_user.oauth_token)
             return jsonify(repo=RepoSchema().dump(repo)), 201
+        else:
+            return jsonify(message="Repo not found"), 404

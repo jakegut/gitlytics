@@ -4,9 +4,6 @@ from tasks import update_git_data
 
 @WEBHOOK.hook()
 def push_hook(data):
-    if data['ref'] != "refs/heads/master":
-        return
-
     repo_name = data['repository']['full_name']
     repo = Repo.query.filter_by(name=repo_name).first()
 
@@ -15,10 +12,11 @@ def push_hook(data):
         return
 
     for commit in data['commits']:
-        data = GitData()
-        data.repo_id = repo.id
-        data.sha = commit['id']
-        db.session.add(data)
+        git = GitData()
+        git.repo_id = repo.id
+        git.sha = commit['id']
+        git.ref = data['ref']
+        db.session.add(git)
 
     db.session.commit()
 

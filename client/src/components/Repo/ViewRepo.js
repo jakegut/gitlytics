@@ -3,6 +3,7 @@ import { Grid, Typography, Container, TableContainer, Paper, Table, TableHead, T
 import { getGitdata } from '../../api/projectService';
 import RepoCommits from '../Stats/RepoCommits';
 import RepoContributions from '../Stats/RepoContributions';
+import RepoTotalContributions from '../Stats/RepoTotalContributions';
 
 export default function ViewRepo(props){
     const {repo} = props;
@@ -59,6 +60,9 @@ export default function ViewRepo(props){
                 </Grid>
                 <Grid item xs={12}>
                     <RepoContributions repo_id={repo.id} />
+                </Grid>
+                <Grid item xs={6}>
+                    <RepoTotalContributions repo_id={repo.id} />
                 </Grid>
             </Grid>
         </Container>

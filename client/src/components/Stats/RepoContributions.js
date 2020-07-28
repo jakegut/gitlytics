@@ -15,6 +15,10 @@ export default function RepoContributions(props){
         getRepoContribs(repo_id)
         .then(data => {
             setData(data.result)
+            if(data.result.length > 0){
+                setAreaData(data.result[0])
+                setValue(data.result[0].name)
+            }
         })
     }, [repo_id])
 
@@ -56,9 +60,6 @@ export default function RepoContributions(props){
                             <YAxis stroke = "#bfbfbf"/>
                             <Tooltip 
                                 active={true}
-                                wrapperStyle={{
-                                visibility: 'visible',
-                                }}
                                 contentStyle={{backgroundColor: "#363636", borderRadius: "5px", border: "none"}}
                                 labelFormatter={(unixTime) => moment.utc(unixTime).format('MM-DD-YYYY')}
                                 stackId="1"
