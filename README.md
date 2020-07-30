@@ -13,10 +13,12 @@ The `GITHUB_*_URL` variables can be left as default if you're using Github's mai
 
 In `.env`, change the `POSTGRES_USER` and `POSTGRES_PASSWORD` to something different and change `SQLALCHEMY_DATABASE_URI` in `settings.env.py` accordingly.
 
+Rename `settings.env.py` to `settings.py`
+
 ### Local development
 To develop locally, follow the above steps and run `docker-compose up --build` and visit `http://localhost:3000`
 
 ### Production
 For production, go to the file `proxy/conf.d/ngnix.conf` and change the `server_name` to the desired server host name. 
-You'll have also have to change both `ssl_certificate` and `ssl_certificate_key` to match the `server_name` variable.
+You'll also have to change both `ssl_certificate` and `ssl_certificate_key` to match the `server_name` variable.
 To start, run `docker-compose -f docker-compse.yml -f docker-compose.prod.yml up --build -d`.
