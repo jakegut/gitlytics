@@ -100,7 +100,7 @@ def get_repo(project_id):
         return jsonify(message="Project not found"), 404
 
     if project.course.is_owner(current_user.id):
-        return jsonify(repos=ps.RepoSchema(many=True).dump(project.repos.all()))
+        return jsonify(type=str(project.type), repos=ps.RepoSchema(many=True).dump(project.repos.all()))
     elif project.course.is_user(current_user.id):
         repo = project.get_repo_for_user(current_user.id)
         if repo is None:

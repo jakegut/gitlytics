@@ -6,17 +6,17 @@ import { Typography, Paper } from '@material-ui/core';
 import { COLORS } from './RepoTotalContributions';
 
 export default function RepoCommits(props){
-    const {repo_id} = props;
+    const {repo_id, days} = props;
     const [data, setData] = useState(null)
 
     useEffect(() => {
         setData(null)
-        getRepoCommits(repo_id)
+        getRepoCommits(repo_id, days)
         .then(d => {
             setData(d.result)
         })
         .catch(err => console.log(err))
-    }, [repo_id]);
+    }, [repo_id, days]);
 
     return (
         <Paper style={{padding: "8px"}}>
@@ -43,7 +43,7 @@ export default function RepoCommits(props){
                         />
                         <Legend />
                         {data.lines.map((line, i) => (
-                            <Line key={line} dataKey={line} fill={COLORS[i % COLORS.length]} stroke={COLORS[i % COLORS.length]}/>
+                            <Line key={line} dataKey={line} fill={COLORS[i % COLORS.length]} stroke={COLORS[i % COLORS.length]} type="monotone"/>
                         ))}
                     </LineChart>
                 </ResponsiveContainer>

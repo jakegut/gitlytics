@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Grid, Typography, Container, TableContainer, Paper, Table, TableHead, TableCell, TableRow, TableBody, CircularProgress } from '@material-ui/core';
+import { Grid, Typography, Container, TableContainer, Paper, Table, TableHead, TableCell, TableRow, TableBody, CircularProgress, Select, MenuItem } from '@material-ui/core';
 import { getGitdata } from '../../api/projectService';
 import RepoCommits from '../Stats/RepoCommits';
 import RepoContributions from '../Stats/RepoContributions';
@@ -8,14 +8,20 @@ import RepoTotalContributions from '../Stats/RepoTotalContributions';
 export default function ViewRepo(props){
     const {repo} = props;
     const [gitdata, setGitdata] = useState(null)
+    const [value, setValue] = useState(30)
 
     useEffect(() => {
+        setValue(30)
         setGitdata(null)
         getGitdata(repo.id)
         .then(data => {
             setGitdata(data.gitdata)
         })
     }, [repo])
+
+    function handleChange(event){
+        setValue(event.target.value)
+    }
 
     return (
         <Container maxWidth="xl" fixed>
@@ -24,6 +30,11 @@ export default function ViewRepo(props){
                     <Typography variant="h3">
                         Stats for: {repo.name}
                     </Typography>
+                    <Select value={value} onChange={handleChange}>
+                        <MenuItem value={30}>30 days</MenuItem>
+                        <MenuItem value={60}>60 days</MenuItem>
+                        <MenuItem value={90}>90 days</MenuItem>
+                    </Select>
                 </Grid>
                 {gitdata ? (
                 <Grid item xs={12}>
@@ -56,13 +67,13 @@ export default function ViewRepo(props){
                 </Grid> ) : <CircularProgress />}
 
                 <Grid item xs={12}>
-                    <RepoCommits repo_id={repo.id} />
+                    <RepoCommits repo_id={repo.id} days={value}/>
                 </Grid>
                 <Grid item xs={12}>
-                    <RepoContributions repo_id={repo.id} />
+                    <RepoContributions repo_id={repo.id} days={value}/>
                 </Grid>
                 <Grid item xs={6}>
-                    <RepoTotalContributions repo_id={repo.id} />
+                    <RepoTotalContributions repo_id={repo.id} days={value}/>
                 </Grid>
             </Grid>
         </Container>

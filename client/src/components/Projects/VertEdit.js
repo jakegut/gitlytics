@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Menu, MenuItem } from '@material-ui/core';
 import { deleteProject as svcDeleteProject} from '../../api/projectService';
+import { updateRepoCommits } from '../../api/statsService';
 
 
 
@@ -16,6 +17,14 @@ export default function VertEdit(props){
         })
     }
 
+    function handleUpdate(event){
+        event.preventDefault()
+        updateRepoCommits(projectID)
+        .then(data => {
+            console.log(data)
+        })
+    }
+
     return(
         <Menu
             anchorEl={anchorEl}
@@ -24,6 +33,7 @@ export default function VertEdit(props){
             onClose={handleClose}
         >
             <MenuItem onClick={handleDelete}>Delete</MenuItem>
+            <MenuItem onClick={handleUpdate}>Update Repo Commits</MenuItem>
         </Menu>
     )
 }

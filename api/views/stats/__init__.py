@@ -6,13 +6,15 @@ from datetime import datetime, timedelta
 
 from models import Repo, Project
 from views.projects.schemas import RepoSchema
-from tasks import get_previous_commits
+from tasks import get_project_commits
+from .utils import get_past_dates
 
 stats = Blueprint('stats', __name__)
 
 @stats.route("/repo/<int:repo_id>/commits")
 @jwt_required
 def get_repo_commits(repo_id):
+    days = int(request.args.get('days', 30))
     repo = Repo.query.get(repo_id)
     if repo is None:
         return jsonify(message="Repo not found"), 404
@@ -22,13 +24,13 @@ def get_repo_commits(repo_id):
 
     query = ("SELECT gitdata.date::date AS commit_date, COUNT(*) AS commits, contributor_user " 
              "FROM gitdata " 
-             f"WHERE repo_id = {repo.id} " 
+             f"WHERE repo_id = {repo.id} AND date > current_date - '{days} days'::interval " 
              "GROUP BY date(gitdata.date), contributor_user  "
              "ORDER BY date(gitdata.date);")
 
     df = pd.read_sql(query, db.engine, parse_dates=['commit_date'])
     d = []
-    dates = pd.date_range(datetime.today().date() - timedelta(days=30), periods=30).to_pydatetime().tolist()
+    dates = get_past_dates(days)
     contributors = df['contributor_user'].unique().tolist()
 
     for date in dates:
@@ -51,6 +53,7 @@ def get_repo_commits(repo_id):
 @stats.route("/repo/<int:repo_id>/contributions")
 @jwt_required
 def get_repo_contrib(repo_id):
+    days = int(request.args.get('days', 30))
     repo = Repo.query.get(repo_id)
     if repo is None:
         return jsonify(message="Repo not found"), 404
@@ -60,12 +63,12 @@ def get_repo_contrib(repo_id):
 
     query = ("SELECT gitdata.date::date AS commit_date, contributor_user, SUM(additions) AS additions, SUM(deletions) AS deletions "
              "FROM gitdata "
-             f"WHERE repo_id = {repo.id} "
+             f"WHERE repo_id = {repo.id} AND date > current_date - '{days} days'::interval "
              "GROUP BY 1, 2 "
              "ORDER BY 1 ")
 
     df = pd.read_sql(query, db.engine, parse_dates=['commit_date'])
-    dates = pd.date_range(datetime.today().date() - timedelta(days=30), periods=30).to_pydatetime().tolist()
+    dates = get_past_dates(days)
     contributors = df['contributor_user'].unique().tolist()
     d = []
 
@@ -88,6 +91,7 @@ def get_repo_contrib(repo_id):
 @stats.route("/repo/<int:repo_id>/total_contributions")
 @jwt_required
 def get_repo_total_contribs(repo_id):
+    days = int(request.args.get('days', 30))
     repo = Repo.query.get(repo_id)
     if repo is None:
         return jsonify(message="Repo not found"), 404
@@ -97,7 +101,7 @@ def get_repo_total_contribs(repo_id):
 
     query = ("SELECT contributor_user, COUNT(sha) AS commits "
              "FROM gitdata "
-             f"WHERE repo_id = {repo.id} AND date > current_date - '30 days'::interval "
+             f"WHERE repo_id = {repo.id} AND date > current_date - '{days} days'::interval "
              "GROUP BY 1 "
              "ORDER BY 1;")
 
@@ -110,28 +114,15 @@ def get_repo_total_contribs(repo_id):
     return jsonify(data=data), 200
 
 
-@stats.route("/populate", methods=['POST'])
+@stats.route("/project/<int:proj_id>/populate", methods=['PUT'])
 @jwt_required
-def populate():
-    data = request.get_json()
-    if 'project_id' in data:
-        project = Project.query.get(data['project_id'])
-        if project is None:
-            return jsonify(message="Project not found"), 404
+def populate(proj_id):
+    proj = Project.query.get(proj_id)
+    if proj is None:
+        return jsonify(message="Project not found"), 404
 
-        repo = Repo()
-        repo.project_id = data['project_id']
-        repo.name = data['repo_name']
-        db.session.add(repo)
-        db.session.commit()
+    if not proj.course.is_owner(current_user.id):
+        return jsonify(message="Unauthorized to view repo"), 403
 
-        get_previous_commits.delay(repo.id, current_user.oauth_token)
-
-        return jsonify(repo=RepoSchema().dump(repo)), 201
-    else:
-        repo = Repo.query.filter_by(name=data['repo_name']).first()
-        if repo is not None:
-            get_previous_commits.delay(repo.id, current_user.oauth_token)
-            return jsonify(repo=RepoSchema().dump(repo)), 201
-        else:
-            return jsonify(message="Repo not found"), 404
+    get_project_commits.delay(proj.id)
+    return '', 204

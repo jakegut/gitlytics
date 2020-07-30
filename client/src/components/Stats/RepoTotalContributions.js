@@ -6,16 +6,16 @@ import { getRepoTotalContribs } from '../../api/statsService';
 export const COLORS = ['#00C49F', '#FFBB28', '#FF8042', '#0088FE'];
 
 export default function RepoTotalContributions(props){
-    const {repo_id} = props;
+    const {repo_id, days} = props;
     const [data, setData] = useState(null)
 
     useEffect(() => {
         setData(null)
-        getRepoTotalContribs(repo_id)
+        getRepoTotalContribs(repo_id, days)
         .then(data => {
             setData(data.data)
         })
-    }, [repo_id])
+    }, [repo_id, days])
 
     return (
         <React.Fragment>

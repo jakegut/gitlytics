@@ -5,14 +5,14 @@ import { ResponsiveContainer, CartesianGrid, XAxis, YAxis, Area, AreaChart, Lege
 import moment from 'moment'
 
 export default function RepoContributions(props){
-    const { repo_id } = props;
+    const { repo_id, days } = props;
     const [data, setData] = useState([])
     const [value, setValue] = useState('')
     const [areaData, setAreaData] = useState(null)
 
     useEffect(() => {
         setAreaData(null)
-        getRepoContribs(repo_id)
+        getRepoContribs(repo_id, days)
         .then(data => {
             setData(data.result)
             if(data.result.length > 0){
@@ -20,7 +20,7 @@ export default function RepoContributions(props){
                 setValue(data.result[0].name)
             }
         })
-    }, [repo_id])
+    }, [repo_id, days])
 
     function handleChange(event){
         setValue(event.target.value)
@@ -65,8 +65,8 @@ export default function RepoContributions(props){
                                 stackId="1"
                             />
                             <Legend />
-                            <Area dataKey="additions" stackId="1" stroke="#3cfc49" fill="#3cfc49"/>
-                            <Area dataKey="deletions" stackId="1" stroke="#fc493c" fill="#fc493c" />
+                            <Area type="monotone" dataKey="additions" stackId="1" stroke="#3cfc49" fill="#3cfc49"/>
+                            <Area type="monotone" dataKey="deletions" stackId="1" stroke="#fc493c" fill="#fc493c" />
                         </AreaChart>
                     </ResponsiveContainer>
                     )}
