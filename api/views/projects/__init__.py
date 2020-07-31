@@ -8,6 +8,7 @@ from models import Course, Invite, Project, Group, User, ProjectTypes, Repo
 import views.projects.schemas as ps
 from .utils import add_webhook
 import settings
+from tasks import delete_webhooks
 
 projects = Blueprint('projects', __name__)
 
@@ -56,6 +57,19 @@ def delete_project(project_id):
         return jsonify(message="Not found"), 404
 
     if project.course.owner_id == current_user.id:
+        to_delete = []
+        for repo in project.repos:
+            user = repo.user
+            if user is None: continue
+            to_delete.append({
+                "oauth": user.oauth_token,
+                "name": repo.name,
+                "webhook_id": repo.webhook_id
+            })
+
+        if len(to_delete) > 0:
+            delete_webhooks.delay(to_delete)
+
         db.session.delete(project)
         db.session.commit()
         return jsonify({}), 204

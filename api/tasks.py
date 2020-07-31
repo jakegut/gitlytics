@@ -105,3 +105,11 @@ def update_git_data(oauth_token=None):
             continue
 
     db.session.commit()
+
+@celery.task
+def delete_webhooks(to_delete):
+    for d in to_delete:
+        session = OAuth2Session(settings.GITHUB_OAUTH_CLIENT_ID,
+                                token={"access_token": d['oauth']})
+        string = f'{settings.GITHUB_API_BASE_URL}repos/{d["name"]}/hooks/{d["webhook_id"]}'
+        req = session.delete(string)

@@ -10,11 +10,13 @@ export default function VertEdit(props){
 
     function handleDelete(event){
         event.preventDefault()
-        svcDeleteProject(projectID)
-        .then(data  => {
-            deleteProject(projectID)
-            handleClose()
-        })
+        // svcDeleteProject(projectID)
+        // .then(data  => {
+        //     deleteProject(projectID)
+        //     handleClose()
+        // })
+        deleteProject(projectID)
+        handleClose()
     }
 
     function handleUpdate(event){

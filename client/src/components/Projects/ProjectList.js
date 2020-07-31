@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import ProjectListItem from './ProjectListItem'
 import VertEdit from './VertEdit';
 import AssignRepo from './AssignRepo';
+import { Typography } from '@material-ui/core';
 
 export default function ProjectList(props){
     const {projects, deleteProject, replaceProject} = props
@@ -39,6 +40,11 @@ export default function ProjectList(props){
 
     return (
         <div>
+            {projects.length === 0 && (
+                <Typography>
+                    No projects here
+                </Typography>
+            )}
             {projects.map(project => (
                 <ProjectListItem key={project.id} project={project} openEditMenu={openEditMenu} openAssignRepo={openDialog} />
             ))}

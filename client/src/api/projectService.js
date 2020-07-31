@@ -8,7 +8,7 @@ export function createProject(data){
     })
 }
 
-export function deleteProject(projectId){
+export function delProject(projectId){
     return axios.delete(`/projects/${projectId}`, getAxiosConfig())
     .then(response => {
         return response.data

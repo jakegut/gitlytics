@@ -80,7 +80,7 @@ class Project(db.Model):
     type = db.Column(db.Enum(ProjectTypes, values_callable=lambda obj: [e.value for e in obj]))
 
     course_id = db.Column(db.Integer, db.ForeignKey("courses.id"))
-    course = db.relationship(Course, backref=db.backref("projects"))
+    course = db.relationship(Course, backref=db.backref("projects", cascade="all, delete"))
 
     def get_group_for_user(self, user_id):
         q = User.query.get(user_id).groups
@@ -113,7 +113,7 @@ class Repo(db.Model):
     webhook_id = db.Column(db.Integer)
 
     project_id = db.Column(db.Integer, db.ForeignKey("projects.id"))
-    project = db.relationship(Project, backref=db.backref("repos", lazy='dynamic'), cascade="all, delete")
+    project = db.relationship(Project, backref=db.backref("repos", lazy='dynamic', cascade="all, delete"))
 
     group_id = db.Column(db.Integer, db.ForeignKey("groups.id"))
     group = db.relationship(Group, backref=db.backref("repo"))
@@ -134,4 +134,4 @@ class GitData(db.Model):
     contributor_user = db.Column(db.Text)
 
     repo_id = db.Column(db.Integer, db.ForeignKey("repos.id"))
-    repo = db.relationship(Repo, backref=db.backref("gitdata", lazy='dynamic'))
+    repo = db.relationship(Repo, backref=db.backref("gitdata", lazy='dynamic', cascade="all, delete"))

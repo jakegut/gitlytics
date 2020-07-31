@@ -6,6 +6,8 @@ import { useLoader } from '../../LoadContext';
 import AddIcon from '@material-ui/icons/Add'
 import InviteUserDialog from '../Invites/InviteUserDialog';
 import ProjectList from '../Projects/ProjectList';
+import ConfirmDeleteDialog from '../Projects/ConfirmDeleteDialog';
+import { delProject } from '../../api/projectService'
 
 export default function ViewCourse(){
     const {course_id} = useParams();
@@ -13,6 +15,7 @@ export default function ViewCourse(){
     const { state, dispatch } = useLoader()
 
     const [inviteDialogOpen, setInviteOpen] = useState(false)
+    const [projectId, setProjectId] = useState(null)
 
     const history = useHistory()
 
@@ -39,9 +42,17 @@ export default function ViewCourse(){
     }
 
     function deleteProject(id){
-        let cpy = {...data}
-        cpy.course.projects = cpy.course.projects.filter(p => p.id !== id)
-        setData(cpy)
+        setProjectId(id)
+    }
+
+    function finalDeleteProject(){
+        delProject(projectId)
+        .then(d => {
+            let cpy = {...data}
+            cpy.course.projects = cpy.course.projects.filter(p => p.id !== projectId)
+            setData(cpy)
+            setProjectId(null)
+        })
     }
 
     function replaceProject(project_id, proj){
@@ -75,6 +86,7 @@ export default function ViewCourse(){
                         )}
                     </Typography>
                     {data.course.projects && <ProjectList projects={data.course.projects} deleteProject={deleteProject} replaceProject={replaceProject} />}
+                    <ConfirmDeleteDialog projectId={projectId} handleClick={finalDeleteProject} handleClose={(e) => setProjectId(null)}/>
                 </Grid>
                 <Grid item sm={12} md={6}>
                     <Typography variant="h4">
@@ -94,9 +106,9 @@ export default function ViewCourse(){
                         <div>
                             <Typography variant="h5">
                                 Invited Students
-                                    <IconButton onClick={() => setInviteOpen(true)}>
-                                        <AddIcon/>
-                                    </IconButton>
+                                <IconButton onClick={() => setInviteOpen(true)}>
+                                    <AddIcon/>
+                                </IconButton>
                             </Typography>
                             <InviteUserDialog open={inviteDialogOpen} setOpen={setInviteOpen} courseId={data.course.id} addInvites={addInvites}/>
                             <div>
