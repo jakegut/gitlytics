@@ -1,4 +1,4 @@
-from flask import Blueprint, url_for, redirect, session, request, jsonify
+from flask import Blueprint, url_for, redirect, session, request, jsonify, make_response
 from flask_jwt_extended import jwt_required, current_user
 from app import db
 import pandas as pd
@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from models import Repo, Project
 from views.projects.schemas import RepoSchema
 from tasks import get_project_commits
-from .utils import get_past_dates
+from .utils import get_past_dates, get_repo_csv
 
 stats = Blueprint('stats', __name__)
 
@@ -126,3 +126,20 @@ def populate(proj_id):
 
     get_project_commits.delay(proj.id)
     return '', 204
+
+@stats.route("/project/<int:project_id>/csv")
+@jwt_required
+def get_project_csv(project_id):
+    proj = Project.query.get(project_id)
+    if proj is None:
+        return jsonify(message="Project not found"), 404
+
+    if not proj.course.is_owner(current_user.id):
+        return jsonify(message="Unauthorized to view repo"), 403
+
+    resp = make_response(get_repo_csv(project_id))
+    resp.headers["Content-Type"] = "text/csv"
+    string = f'{proj.name.replace(" ", "_")}_repos_{datetime.utcnow().isoformat()}.csv'
+    resp.headers["Content-Disposition"] = f"attachment; filename={string}"
+    return resp
+

@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {getAxiosConfig} from './util'
+import {getAxiosConfig, getDownloadConfig} from './util'
 
 export function getRepoCommits(repo_id, days){
     return axios.get(`/stats/repo/${repo_id}/commits?days=${days}`, getAxiosConfig())
@@ -27,4 +27,8 @@ export function updateRepoCommits(proj_id){
     .then(response => {
         return response.data
     })
+}
+
+export function getProjectCsv(proj_id){
+    return axios.get(`/stats/project/${proj_id}/csv`, getDownloadConfig())
 }
