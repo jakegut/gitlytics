@@ -25,3 +25,8 @@ To develop locally, follow the above steps and run `docker-compose up --build` a
 For production, go to the file `proxy/conf.d/ngnix.conf` and change the `server_name` to the desired server host name. 
 You'll also have to change both `ssl_certificate` and `ssl_certificate_key` to match the `server_name` variable.
 To start, run `docker-compose -f docker-compse.yml -f docker-compose.prod.yml up --build -d`.
+
+#### Note
+For any of the development environments, you need to run the migrations from the container where the API is running.
+Enter the container by running `docker exec -it gitlytics_api_1 bash` or similar, the name of the container should match the API container name which you can find using `docker ls`.
+Once in the container, run `alembic upgrade head`.
