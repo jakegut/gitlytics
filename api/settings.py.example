@@ -7,10 +7,10 @@ GITHUB_TOKEN_URL = 'https://github.com/login/oauth/access_token'
 
 BASE_URL = "https://localhost"
 
-CLIENT_REDIRECT_URI = f"{BASE_RUL}/callback"
+CLIENT_REDIRECT_URI = f"{BASE_URL}/callback"
 
 GITHUB_WEBHOOK_SECRET= 'hookssss'
-GITHUB_WEBHOOK_URL= f'{BASE_RUL}/postreceive'
+GITHUB_WEBHOOK_URL= f'{BASE_URL}/postreceive'
 
 SECRET_KEY = "oof"
 JWT_SECRET_KEY = "biggeroof"
