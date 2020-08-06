@@ -6,6 +6,9 @@ All you need to have installed is Docker with docker-compose.
 
 ## Setup
 To start, you need to setup a Github OAuth application to handle users logging in through Github. 
+When setting up the OAuth application, the callback url needs to match those in the settings.
+For right now the callback endpoint is hardcoded to `{BASE_URL}/callback`.
+
 Once you have the client ID and secret, copy those values into `api/settings.py.example` as `GITHUB_OAUTH_CLIENT_ID` and `GITHUB_OAUTH_CLIENT_SECRET` respectively.
 The `GITHUB_*_URL` variables can be left as default if you're using Github's main service, if you're using Github Enterprise then change these values according to the documentation.
 
