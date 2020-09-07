@@ -48,7 +48,7 @@ export default function ProjectListItem(props){
             </CardContent>
             <CardActions>
                 {isOwner() && (
-                    <LinkButton to={`/courses/${course_id}/project/${project.id}/repos`}>
+                    <LinkButton to={`/main/courses/${course_id}/project/${project.id}/repos`}>
                         View Repos
                     </LinkButton>
                 )}
@@ -57,7 +57,7 @@ export default function ProjectListItem(props){
                         Assign a Repo
                     </Button>
                 ) : (
-                    <LinkButton to={`/courses/${course_id}/project/${project.id}/repos`}>
+                    <LinkButton to={`/main/courses/${course_id}/project/${project.id}/repos`}>
                         View Repo: {project.user_repo.name}
                     </LinkButton>
                 )}

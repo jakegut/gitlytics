@@ -49,7 +49,7 @@ export default function CoursesList(){
           <Typography variant="h4">
             Owned Courses
             <Tooltip title="Create a course">
-              <IconButton tooltip="Create a Course" component={Link} to="/courses/create">
+              <IconButton tooltip="Create a Course" component={Link} to="/main/courses/create">
                 <AddIcon />
               </IconButton>
             </Tooltip>

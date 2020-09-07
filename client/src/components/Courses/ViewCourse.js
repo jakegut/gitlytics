@@ -27,12 +27,12 @@ export default function ViewCourse(){
             dispatch("FINISHED")
         })
         .catch(error => {
-            history.push('/courses')
+            history.push('/main/courses')
         })
     }, [])
 
     function goToCreateProject(e){
-        history.push(`/courses/${course_id}/p/create`)
+        history.push(`/main/courses/${course_id}/p/create`)
     }
 
     function addInvites(d){

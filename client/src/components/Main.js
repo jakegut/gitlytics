@@ -130,9 +130,9 @@ export default function Main() {
         <LoadProvider>
           <div className={classes.toolbar} />
           <Switch>
-              <Route exact path="/" component={Home} />
-              <Route path="/callback" component={Callback} />
-              <Route path="/courses" component={Courses} />
+              {/* <Route exact path="/" component={Home} />
+              <Route path="/callback" component={Callback} /> */}
+              <Route path="/main/courses" component={Courses} />
           </Switch>
         </LoadProvider>
       </main>

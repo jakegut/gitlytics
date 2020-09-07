@@ -27,7 +27,7 @@ export default function AuthList(){
     return (
         <List>
             {user ?
-            <Link to="/courses"><ListItem button>
+            <Link to="/main/courses"><ListItem button>
                 <ListItemIcon><ClassIcon /></ListItemIcon>
                 <ListItemText primary="Courses" />
             </ListItem></Link>
