@@ -16,7 +16,6 @@ export function retrieveUser(token){
         return response.data.user
     })
     .catch((err) => {return null});
-    
 }
 
 export function setToken(token){
@@ -25,4 +24,8 @@ export function setToken(token){
 
 export function getToken(){
     return localStorage.getItem("token")
+}
+
+export function isLoggedIn(){
+    return getToken() !== null;
 }
