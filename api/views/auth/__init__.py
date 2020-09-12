@@ -1,7 +1,7 @@
-from flask import Blueprint, url_for, redirect, session, request, jsonify
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask import Blueprint, url_for, redirect, session, request, jsonify, current_app
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_raw_jwt
 from requests_oauthlib import OAuth2Session
-from models import User
+from models import User, TokenList
 from urllib.parse import urlencode
 from sqlalchemy.orm.exc import NoResultFound
 from app import db
@@ -43,6 +43,7 @@ def index():
     authorization_url = f"{settings.GITHUB_AUTHORIZATION_URL}?{urlencode(params)}"
 
     # State is used to prevent CSRF, keep this for later.
+    print(params['state'])
     session['oauth_state'] = params['state']
     return jsonify({'url': authorization_url})
 
@@ -86,6 +87,9 @@ def callback():
     db.session.commit()
 
     access_token = create_access_token(user)
+
+    TokenList.add_to_db(access_token, current_app.config['JWT_IDENTITY_CLAIM'])
+
     ret = {
         "access_token": access_token,
         "user": user_schema.dump(user)
@@ -99,3 +103,9 @@ def get_user():
     if user is None:
         return jsonify({"error": "error"})
     return jsonify({"user": user_schema.dump(user)})
+
+@auth.route('/logout', methods=['DELETE'])
+@jwt_required
+def logout_user():
+    TokenList.revoke(get_raw_jwt())
+    return jsonify(msg="Successfully logged out"), 200

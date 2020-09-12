@@ -34,7 +34,7 @@ def create_app():
     CORS(app)
     init_celery(celery, app)
 
-    from models import Course, User, Invite
+    from models import Course, User, Invite, TokenList
 
     @jwt.user_identity_loader
     def user_identity_lookup(user):
@@ -50,6 +50,10 @@ def create_app():
             "msg": "User {} not found".format(identity)
         }
         return jsonify(ret), 404
+
+    @jwt.token_in_blacklist_loader
+    def check_token(token):
+        return TokenList.is_revoked(token)
 
     from views.users import schemas
     from views.courses import schemas

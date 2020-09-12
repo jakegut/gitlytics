@@ -9,7 +9,7 @@ import MomentUtils from '@date-io/moment';
 
 import Main from './components/Main';
 import Landing from './components/Landing';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 
 const theme = createMuiTheme({
   palette:{
@@ -24,11 +24,19 @@ function App() {
 
   const [user, setUser] = useState(undefined);
 
+  const history = useHistory();
+  let { path } = useRouteMatch();
+
   const providerValue = useMemo(() => ({user, setUser}), [user, setUser]);
 
   useEffect(() => {
     retrieveUser(getToken())
     .then(user => setUser(user))
+    .catch(err => {
+      setUser(null);
+      if(path !== "/")
+        history.push("/")
+    })
   }, [])
 
   return (

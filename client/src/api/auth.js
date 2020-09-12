@@ -13,9 +13,10 @@ export function retrieveUser(token){
     .then(response => {
         if(response.status != 200)
             return null
+        if(!isLoggedIn())
+            return null
         return response.data.user
     })
-    .catch((err) => {return null});
 }
 
 export function setToken(token){

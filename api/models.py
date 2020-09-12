@@ -1,9 +1,12 @@
-from flask_dance.consumer.storage.sqla import OAuthConsumerMixin
 from flask_login import UserMixin
+from sqlalchemy.orm.exc import NoResultFound
+from flask_jwt_extended import decode_token
+
 from app import db
 from utils import random_string
 from sqlalchemy.sql import func
 import enum
+from datetime import datetime
 
 registered = db.Table("registered",
     db.Column("user_id", db.Integer, db.ForeignKey("users.id")),
@@ -135,3 +138,59 @@ class GitData(db.Model):
 
     repo_id = db.Column(db.Integer, db.ForeignKey("repos.id"))
     repo = db.relationship(Repo, backref=db.backref("gitdata", lazy='dynamic', cascade="all, delete"))
+
+class TokenList(db.Model):
+    __tablename__ = "tokenlist"
+
+    id = db.Column(db.Integer, primary_key=True)
+    jti = db.Column(db.String(36), nullable=False)
+    token_type = db.Column(db.String(10), nullable=False)
+    user_identity = db.Column(db.Text, nullable=False)
+    revoked = db.Column(db.Boolean, nullable=False)
+    expires = db.Column(db.DateTime, nullable=False)
+
+    @classmethod
+    def prune(cls):
+        now = datetime.now()
+        expired = cls.query.filter_by(cls.expires < now).all()
+        for row in expired:
+            db.session.delete(row)
+        db.session.commit()
+
+    @classmethod
+    def is_revoked(cls, decoded_token):
+        jti = decoded_token['jti']
+        token = cls.query.filter_by(jti=jti).first()
+        if token is None:
+            return True
+        else:
+            return token.revoked
+
+    @classmethod
+    def revoke(cls, raw_token):
+        try:
+            jti = raw_token['jti']
+            token = cls.query.filter_by(jti=jti).first()
+            db.session.delete(token)
+            db.session.commit()
+        except NoResultFound:
+            return
+
+    @classmethod
+    def add_to_db(cls, encoded_token, identity_claim):
+        decoded_token = decode_token(encoded_token)
+        jti = decoded_token['jti']
+        token_type = decoded_token['type']
+        user_identity = decoded_token[identity_claim]
+        expires = datetime.fromtimestamp(decoded_token['exp'])
+        revoked = False
+
+        db_token = TokenList(
+            jti=jti,
+            token_type=token_type,
+            user_identity=user_identity,
+            expires=expires,
+            revoked=revoked
+        )
+        db.session.add(db_token)
+        db.session.commit()
