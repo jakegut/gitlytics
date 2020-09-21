@@ -20,7 +20,7 @@ def push_hook(data):
 
     db.session.commit()
 
-    git = update_git_data.delay()
+    git = update_git_data.delay([repo.id])
 
 @WEBHOOK.hook(event_type="ping")
 def ping_hook(data):

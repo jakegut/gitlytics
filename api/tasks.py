@@ -79,30 +79,34 @@ def add_previous_commits(repo, prev_days):
 def get_project_commits(proj_id, prev_days=30):
     proj = Project.query.get(proj_id)
     if proj is None: return
+    repo_ids = []
 
     for repo in proj.repos.all():
         add_previous_commits(repo, prev_days)
+        repo_ids.append(repo.id)
 
-    update_git_data.delay()
+    update_git_data.delay(repo_ids)
 
 @celery.task
-def update_git_data(oauth_token=None):
-    gitdata = GitData.query.filter_by(additions=None).all()
+def update_git_data(repo_ids, oauth_token=None):
 
-    for commit in gitdata:
-        user = commit.repo.user
-        if user is None and oauth_token is None: continue
-        session = OAuth2Session(settings.GITHUB_OAUTH_CLIENT_ID, token={"access_token": user.oauth_token if oauth_token is None else oauth_token})
-        string = f'{settings.GITHUB_API_BASE_URL}repos/{commit.repo.name}/commits/{commit.sha}'
-        commit_data = session.get(string).json()
-        try:
-            commit.date = commit_data['commit']['author']['date']
-            commit.contributor_user = commit_data['author']['login']
-            commit.additions = commit_data['stats']['additions']
-            commit.deletions = commit_data['stats']['deletions']
-        except KeyError as e:
-            print("KEY ERROR:", str(e))
-            continue
+    for repo_id in repo_ids:
+        gitdata = GitData.query.filter_by(additions=None, repo_id=repo_id).all()
+        if gitdata is None or len(gitdata) == 0: continue
+        user = gitdata[0].repo.user
+        for commit in gitdata:
+            if user is None and oauth_token is None: continue
+            session = OAuth2Session(settings.GITHUB_OAUTH_CLIENT_ID, token={"access_token": user.oauth_token if oauth_token is None else oauth_token})
+            string = f'{settings.GITHUB_API_BASE_URL}repos/{commit.repo.name}/commits/{commit.sha}'
+            commit_data = session.get(string).json()
+            try:
+                commit.date = commit_data['commit']['author']['date']
+                commit.contributor_user = commit_data['author']['login']
+                commit.additions = commit_data['stats']['additions']
+                commit.deletions = commit_data['stats']['deletions']
+            except KeyError as e:
+                print("KEY ERROR:", str(e))
+                continue
 
     db.session.commit()
 
