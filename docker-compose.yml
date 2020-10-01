@@ -45,7 +45,7 @@ services:
       context: ./api
       dockerfile: Dockerfile-dev
     command: >
-      celery -A celery_worker.celery worker --loglevel=info
+      celery -A celery_worker.celery worker --loglevel=INFO
     volumes:
       - './api:/usr/src/app'
     depends_on:

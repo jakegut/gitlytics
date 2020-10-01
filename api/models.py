@@ -1,12 +1,15 @@
 from flask_login import UserMixin
 from sqlalchemy.orm.exc import NoResultFound
 from flask_jwt_extended import decode_token
+from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine, StringEncryptedType
 
 from app import db
 from utils import random_string
 from sqlalchemy.sql import func
 import enum
 from datetime import datetime
+
+_key = "dfasjdbfl;abyklasdfjlas"
 
 registered = db.Table("registered",
     db.Column("user_id", db.Integer, db.ForeignKey("users.id")),
@@ -24,11 +27,11 @@ class User(UserMixin, db.Model):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100), unique=True)
-    email = db.Column(db.String(100))
+    username = db.Column(StringEncryptedType(db.String, _key, AesEngine), unique=True)
+    email = db.Column(StringEncryptedType(db.String, _key, AesEngine))
     avatar_url = db.Column(db.String(255))
     name = db.Column(db.String(255))
-    oauth_token = db.Column(db.Text)
+    oauth_token = db.Column(StringEncryptedType(db.Text, _key, AesEngine))
 
     courses = db.relationship('Course', secondary=registered, backref=db.backref('users'))
 
@@ -134,7 +137,7 @@ class GitData(db.Model):
     additions = db.Column(db.Integer)
     deletions = db.Column(db.Integer)
     date = db.Column(db.DateTime)
-    contributor_user = db.Column(db.Text)
+    contributor_user = db.Column(StringEncryptedType(db.Text, _key, AesEngine))
 
     repo_id = db.Column(db.Integer, db.ForeignKey("repos.id"))
     repo = db.relationship(Repo, backref=db.backref("gitdata", lazy='dynamic', cascade="all, delete"))
