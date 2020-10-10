@@ -8,8 +8,7 @@ from utils import random_string
 from sqlalchemy.sql import func
 import enum
 from datetime import datetime
-
-_key = "dfasjdbfl;abyklasdfjlas"
+import settings
 
 registered = db.Table("registered",
     db.Column("user_id", db.Integer, db.ForeignKey("users.id")),
@@ -27,11 +26,11 @@ class User(UserMixin, db.Model):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(StringEncryptedType(db.String, _key, AesEngine), unique=True)
-    email = db.Column(StringEncryptedType(db.String, _key, AesEngine))
+    username = db.Column(StringEncryptedType(db.String, settings.DB_ENCRYPT_KEY, AesEngine), unique=True)
+    email = db.Column(StringEncryptedType(db.String, settings.DB_ENCRYPT_KEY, AesEngine))
     avatar_url = db.Column(db.String(255))
     name = db.Column(db.String(255))
-    oauth_token = db.Column(StringEncryptedType(db.Text, _key, AesEngine))
+    oauth_token = db.Column(StringEncryptedType(db.Text, settings.DB_ENCRYPT_KEY, AesEngine))
 
     courses = db.relationship('Course', secondary=registered, backref=db.backref('users'))
 
@@ -137,7 +136,7 @@ class GitData(db.Model):
     additions = db.Column(db.Integer)
     deletions = db.Column(db.Integer)
     date = db.Column(db.DateTime)
-    contributor_user = db.Column(StringEncryptedType(db.Text, _key, AesEngine))
+    contributor_user = db.Column(StringEncryptedType(db.Text, settings.DB_ENCRYPT_KEY, AesEngine))
 
     repo_id = db.Column(db.Integer, db.ForeignKey("repos.id"))
     repo = db.relationship(Repo, backref=db.backref("gitdata", lazy='dynamic', cascade="all, delete"))

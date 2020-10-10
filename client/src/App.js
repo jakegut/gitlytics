@@ -34,6 +34,7 @@ function App() {
     .then(user => setUser(user))
     .catch(err => {
       setUser(null);
+      localStorage.removeItem("token");
       if(path !== "/")
         history.push("/")
     })

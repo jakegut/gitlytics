@@ -3,13 +3,20 @@ from flask_jwt_extended import jwt_required, current_user
 from app import db
 import pandas as pd
 from datetime import datetime, timedelta
+import settings
 
 from models import Repo, Project
 from views.projects.schemas import RepoSchema
 from tasks import get_project_commits
 from .utils import get_past_dates, get_repo_csv
 
+from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine
+
 stats = Blueprint('stats', __name__)
+
+engine = AesEngine()
+engine._update_key(settings.DB_ENCRYPT_KEY)
+engine._set_padding_mechanism()
 
 @stats.route("/repo/<int:repo_id>/commits")
 @jwt_required
@@ -31,6 +38,8 @@ def get_repo_commits(repo_id):
     df = pd.read_sql(query, db.engine, parse_dates=['commit_date'])
     d = []
     dates = get_past_dates(days)
+
+    df['contributor_user'] = [engine.decrypt(user) for user in df['contributor_user']]
     contributors = df['contributor_user'].unique().tolist()
 
     for date in dates:
@@ -69,6 +78,8 @@ def get_repo_contrib(repo_id):
 
     df = pd.read_sql(query, db.engine, parse_dates=['commit_date'])
     dates = get_past_dates(days)
+
+    df['contributor_user'] = [engine.decrypt(user) for user in df['contributor_user']]
     contributors = df['contributor_user'].unique().tolist()
     d = []
 
@@ -109,7 +120,7 @@ def get_repo_total_contribs(repo_id):
     data = []
 
     for row in rows:
-        data.append({"name": row['contributor_user'], "commits": int(row['commits'])})
+        data.append({"name": engine.decrypt(row['contributor_user']), "commits": int(row['commits'])})
 
     return jsonify(data=data), 200
 
