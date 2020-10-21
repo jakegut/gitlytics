@@ -5,18 +5,29 @@ import { Typography, Button, TextField } from '@material-ui/core';
 import { Link, useHistory } from 'react-router-dom';
 import SearchUsers from '../SearchUsers'
 import { createCourse } from '../../api/courseService';
+import BulkAddStudents from './BulkAddStudents';
 
 export default function CreateCourse(){
 
     const [selectedUsers, setSelectedUsers] = useState([])
     const [name, setName] = useState("")
     const [error, setError] = useState({})
+    const [open, setOpen] = useState(false);
 
     const history = useHistory()
 
     function onUserSelect(user){
         if(!selectedUsers.includes(user))
             setSelectedUsers(selected => selected.concat(user))
+    }
+
+    function onUserSelectBulk(users){
+        if(users.length > 0)
+            for(let i in users){
+                onUserSelect(users[i])
+                console.log("Added: " + users[i])
+            }
+                
     }
 
     function onUserRemove(user){
@@ -31,7 +42,7 @@ export default function CreateCourse(){
         }
         createCourse(data)
         .then(response => {
-            history.push('/courses')
+            history.push('/main/courses')
         })
         .catch(error => {
             console.log(error.response.data)
@@ -69,7 +80,11 @@ export default function CreateCourse(){
                 <Typography>
                     Invite Users
                 </Typography>
+                <Button variant="contained" onClick={() => setOpen(true)}>
+                    bulk add
+                </Button>
                 <SearchUsers selectedUsers={selectedUsers}  onUserSelect={onUserSelect} onUserRemove={onUserRemove}/>
+                <BulkAddStudents open={open} setOpen={setOpen} addInvitedStudents={onUserSelectBulk}/>
             </div>
             <Button onClick={handleFormSubmit} variant="contained" style={{margin: "8px"}}>
                 Submit

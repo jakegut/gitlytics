@@ -42,3 +42,10 @@ export function getStudents(course_id){
         return response.data
     })
 }
+
+export function checkStudents(students){
+    return axios.post('/courses/check', {students}, getAxiosConfig())
+    .then(response => {
+        return response.data
+    })
+}

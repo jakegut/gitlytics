@@ -91,3 +91,20 @@ def search_users():
     resp = github.get(f"{settings.GITHUB_API_BASE_URL}search/users?q={user}+in:login").json()
 
     return jsonify([{"login": u['login'], "avatar_url": u['avatar_url']} for u in resp['items'][0:5]])
+
+@courses.route("/check", methods=['POST'])
+@jwt_required
+def check_users():
+    students = request.get_json()['students']
+    invalid_students = []
+    valid_students = []
+    github = OAuth2Session(settings.GITHUB_OAUTH_CLIENT_ID, token={"access_token": current_user.oauth_token})
+
+    for student in students:
+        resp = github.get(f"{settings.GITHUB_API_BASE_URL}users/{student}")
+        if resp.status_code != 200:
+            invalid_students.append(student)
+        else:
+            valid_students.append(student)
+
+    return jsonify({"invalid_students": invalid_students, "valid_students": valid_students})

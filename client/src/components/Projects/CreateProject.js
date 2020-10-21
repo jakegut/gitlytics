@@ -34,7 +34,7 @@ export default function CreateProject(){
         }
         createProject(cpy)
         .then(data => {
-            history.push(`/courses/${course_id}`)
+            history.push(`/main/courses/${course_id}`)
         })
     }
 
