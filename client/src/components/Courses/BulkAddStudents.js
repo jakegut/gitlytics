@@ -18,22 +18,36 @@ export default function BulkAddStudents({
     const [bulkText, setBulkText] = useState("")
     const [invalidStudents, setInvalidStudents] = useState([])
     const [validStudents, setValidStudents] = useState([])
-    const [checkStudentStatus, setStudentStatus] = useState({})
+    const [checkProgress, setCheckProgress] = useState(0)
     const [checkStatus, setCheckStatus] = useState(false)
 
-    function checkAndAddStudents(){
-      let students = bulkText.split('\n')
-      setStudentStatus({length: students.length, progress: 0})
+    async function readFile(e){
+      e.preventDefault();
+      const reader = new FileReader();
+      reader.onload = async function (e){
+        const text = e.target.result;
+        console.log(text);
+        setBulkText(text);
+      }
+      reader.readAsText(e.target.files[0]);
+    }
+
+    async function checkAndAddStudents(){
+      let students = bulkText.split('\n').map(a => a.trim());
+      let p = 0;
       setOpen(false)
       setCheckStatus(true)
       for(let i = 0; i < students.length; i += 10){
-        let tempStudents = students.splice(i, i + 10)
-        checkStudents(tempStudents)
+        let tempStudents = students.splice(i, 10);
+        await checkStudents(tempStudents)
           .then(data => {
             setInvalidStudents(invalidStudents.concat(data.invalid_students))
             addInvitedStudents(data.valid_students)
-            setStudentStatus({...checkStudentStatus, progress: i/students.length*100})
-          })
+            p += tempStudents.length;
+            setCheckProgress(Math.min(100, (p/students.length * 100).toFixed(0)));
+          });
+          console.log(i);
+          console.log(checkProgress);
       }
     }
 
@@ -51,6 +65,18 @@ export default function BulkAddStudents({
               </DialogTitle>
               <DialogContent>
                   <form>
+                    <label htmlFor="upload-file">
+                      <input
+                        style={{ display: 'none' }}
+                        id="upload-file"
+                        name="upload-file"
+                        type="file"
+                        onChange={(e) => readFile(e)}
+                      />
+                      <Button variant="contained" component="span">
+                        Upload file
+                      </Button>
+                    </label>
                     <TextField 
                       multiline
                       fullWidth
@@ -73,8 +99,11 @@ export default function BulkAddStudents({
           </Dialog>
           <Dialog open={checkStatus}>
             <DialogContent>
-              <CircularProgress variant="static" value={checkStudentStatus.progress} />
-              {invalidStudents.length > 0 && (
+              <Typography>
+                <CircularProgress variant="static" value={checkProgress} />
+                {checkProgress}%
+              </Typography>
+              {invalidStudents.length > 0 ? (
                 <React.Fragment>
                   <DialogContentText>
                     Could not find usernames:
@@ -85,10 +114,14 @@ export default function BulkAddStudents({
                   ))}
                   </ul>
                 </React.Fragment>
+              ) : (
+                <Typography>
+                  No invalid students
+                </Typography>
               )}
             </DialogContent>
             <DialogActions>
-              <Button disabled={checkStudentStatus.progress <= 1} onClick={() => closeStatus()}>
+              <Button disabled={checkProgress < 100} onClick={() => closeStatus()}>
                  Close   
               </Button>
             </DialogActions>
