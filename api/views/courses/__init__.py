@@ -70,6 +70,19 @@ def get_course(course_id):
         ret['invites'] = inv_schemas.invites_schema.dump(course.invites)
     return jsonify(ret), 200
 
+@courses.route("/<int:course_id>", methods=['DELETE'])
+@jwt_required
+def delete_course(course_id):
+    course = Course.query.filter_by(id=course_id).first()
+    if course is None:
+        return jsonify(message="Course ID not found"), 404
+    if course.id != current_user.id:
+        return jsonify(message="Unauthorized to delete course"), 404
+    db.session.delete(course)
+    db.session.commit()
+
+    return jsonify({}), 204
+
 @courses.route("/<int:course_id>/students")
 @jwt_required
 def get_course_students(course_id):
