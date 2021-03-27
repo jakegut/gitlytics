@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import './App.css';
-import Drawer from '@material-ui/core/Drawer';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core';
 import {UserContext} from './UserContext';
 import { retrieveUser, getToken } from './api/auth';

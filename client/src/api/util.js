@@ -1,4 +1,4 @@
-import {getToken, setToken} from './auth'
+import {getToken} from './auth'
 
 export function getAxiosConfig(){
     return {

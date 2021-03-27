@@ -11,7 +11,7 @@ export function retrieveAccessTokenAndUser(code){
 export function retrieveUser(token){
     return axios.get("/auth/user", getAxiosConfig())
     .then(response => {
-        if(response.status != 200)
+        if(response.status !== 200)
             return null
         if(!isLoggedIn())
             return null
