@@ -22,19 +22,21 @@ services:
       
   proxy:
     restart: unless-stopped
-    image: staticfloat/nginx-certbot
+    image: linuxserver/swag
     ports:
-      - 80:80/tcp
-      - 443:443/tcp
+      - 80:80
+      - 443:443
     environment:
-      - CERTBOT_EMAIL=jakegut0108@gmail.com
+      - EMAIL=jakegut0108+letsencrypt@gmail.com
+      - URL=jakegut.com
+      - SUBDOMAINS=git
+      - VALIDATION=http
+      - TZ=America/Chicago
+      - ONLY_SUBDOMAINS=true
+      - PUID=1000
+      - PGID=1000
     volumes:
-      - ./proxy/conf.d:/etc/nginx/user.conf.d
-      - letsencrypt:/etc/letsencrypt
+      - ./proxy/config:/config/nginx/site-confs
       
   worker:
-    build: ./api
-    
-volumes:
-  letsencrypt:
-  
+    build: ./api  
