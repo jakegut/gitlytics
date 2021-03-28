@@ -8,6 +8,7 @@ services:
       - FLASK_ENV="production"
       - SCRIPT_NAME=/api
       - PORT="5000"
+      - FORWARDED_ALLOW_IPS=*
     expose:
       - "5000"
   
@@ -28,7 +29,7 @@ services:
       - 443:443
     environment:
       - EMAIL=jakegut0108+letsencrypt@gmail.com
-      - URL=jakegut.com
+      - URL=jakerg.me
       - SUBDOMAINS=git
       - VALIDATION=http
       - TZ=America/Chicago
@@ -37,6 +38,10 @@ services:
       - PGID=1000
     volumes:
       - ./proxy/config:/config/nginx/site-confs
+      - letsencrypt:/config/etc
       
   worker:
-    build: ./api  
+    build: ./api 
+
+volumes:
+  letsencrypt:
